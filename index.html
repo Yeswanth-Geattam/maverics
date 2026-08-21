@@ -1,0 +1,1961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CuraMatch AI Pro | Clinical Trial Intelligence Platform</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet GIS Map CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    
+    <!-- FontAwesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="dark-theme">
+
+    <!-- LOGIN SCREEN OVERLAY -->
+    <style>
+        #loginPortalScreen {
+            background: radial-gradient(ellipse at 15% 40%, rgba(221,245,240,0.6) 0%, transparent 50%),
+                        radial-gradient(ellipse at 85% 15%, rgba(21,154,156,0.08) 0%, transparent 50%),
+                        radial-gradient(ellipse at 50% 85%, rgba(15,92,99,0.04) 0%, transparent 50%),
+                        rgba(22,58,67,0.7) !important;
+        }
+        .login-role-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important; }
+        .login-role-card:hover { transform: translateY(-3px) scale(1.02) !important; box-shadow: 0 8px 25px rgba(15,92,99,0.12) !important; background: #DDF5F0 !important; }
+        .login-panel-glow { position: relative; }
+        .login-panel-glow::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #0F5C63, #159A9C, #DDF5F0); border-radius: 20px 20px 0 0; }
+    </style>
+    <div id="loginPortalScreen" class="modal-overlay" style="z-index: 100000; backdrop-filter: blur(20px); display: flex; align-items: center; justify-content: center;">
+        <div class="glass-panel login-panel-glow" style="width: 580px; padding: 2.5rem; border: 1px solid rgba(15,92,99,0.1); box-shadow: 0 25px 60px rgba(15,92,99,0.15); border-radius: 24px; position: relative;">
+            <button type="button" onclick="document.getElementById('loginPortalScreen').style.display='none'; var l=document.getElementById('aiClinicalChatbotLauncher'); if(l){l.style.display='flex';l.style.zIndex='999999999';}" style="position: absolute; top: 18px; right: 20px; background: none; border: none; color: var(--text-dim); font-size: 1.3rem; cursor: pointer;">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div class="logo-icon-box" style="margin: 0 auto 1rem auto; width: 68px; height: 68px; font-size: 2rem; border-radius: 18px;">
+                    <i class="fa-solid fa-dna pulse-glow"></i>
+                </div>
+                <h1 style="font-family: 'Outfit', sans-serif; font-size: 1.9rem; font-weight: 900; color: #163A43; letter-spacing: -0.03em;">CuraMatch <span class="badge-pro">PRO</span></h1>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.4rem; letter-spacing: 0.02em;">Enterprise Role-Based Clinical Trial Portal</p>
+            </div>
+            <div style="margin-bottom: 1.5rem;">
+                <label style="font-size: 0.78rem; font-weight: 800; color: var(--text-dim); display: block; margin-bottom: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em;">
+                    <i class="fa-solid fa-user-shield" style="color: var(--primary);"></i> Select Portal Login Role
+                </label>
+                <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+                    <button type="button" class="login-role-card" onclick="document.getElementById('loginPortalScreen').style.display='none'; showAiBot(); loginAsRole('STAKEHOLDER_SPONSOR');" style="display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1.1rem; background: #F5FAFC; border: 1px solid rgba(111,66,193,0.2); border-radius: 14px; cursor: pointer; text-align: left;">
+                        <div style="display: flex; align-items: center; gap: 0.85rem; pointer-events: none;">
+                            <div style="width: 42px; height: 42px; border-radius: 12px; background: rgba(111,66,193,0.1); display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-chart-line text-purple" style="font-size: 1.2rem;"></i></div>
+                            <div><strong style="color: #163A43; font-size: 0.92rem;">1. Pharma Stakeholder / Sponsor</strong><p style="font-size: 0.73rem; color: #52656D; margin-top: 2px;">View Registered Drugs, Clinical Testing Progress &amp; Drug Performance Analytics</p></div>
+                        </div>
+                        <i class="fa-solid fa-arrow-right text-purple" style="opacity: 0.6;"></i>
+                    </button>
+                    <button type="button" class="login-role-card" onclick="document.getElementById('loginPortalScreen').style.display='none'; showAiBot(); loginAsRole('CLINICAL_RESEARCHER');" style="display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1.1rem; background: #F5FAFC; border: 1px solid rgba(232,146,11,0.2); border-radius: 14px; cursor: pointer; text-align: left;">
+                        <div style="display: flex; align-items: center; gap: 0.85rem; pointer-events: none;">
+                            <div style="width: 42px; height: 42px; border-radius: 12px; background: rgba(232,146,11,0.1); display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-vial-circle-check text-amber" style="font-size: 1.2rem;"></i></div>
+                            <div><strong style="color: #163A43; font-size: 0.92rem;">2. Clinical Researcher &amp; R&amp;D</strong><p style="font-size: 0.73rem; color: #52656D; margin-top: 2px;">Add New Drugs, Receive Post-Dose Feedback &amp; AI Improvement Suggestions</p></div>
+                        </div>
+                        <i class="fa-solid fa-arrow-right text-amber" style="opacity: 0.6;"></i>
+                    </button>
+                    <button type="button" class="login-role-card" onclick="document.getElementById('loginPortalScreen').style.display='none'; showAiBot(); loginAsRole('DOCTOR_INVESTIGATOR');" style="display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1.1rem; background: #F5FAFC; border: 1px solid rgba(15,92,99,0.2); border-radius: 14px; cursor: pointer; text-align: left;">
+                        <div style="display: flex; align-items: center; gap: 0.85rem; pointer-events: none;">
+                            <div style="width: 42px; height: 42px; border-radius: 12px; background: rgba(15,92,99,0.08); display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-user-doctor text-cyan" style="font-size: 1.2rem;"></i></div>
+                            <div><strong style="color: #163A43; font-size: 0.92rem;">3. Doctor / Clinical Tester</strong><p style="font-size: 0.73rem; color: #52656D; margin-top: 2px;">Upload Datasets, Execute AI Patient Screening &amp; Transmit Reports to Researchers</p></div>
+                        </div>
+                        <i class="fa-solid fa-arrow-right text-cyan" style="opacity: 0.6;"></i>
+                    </button>
+                    <button type="button" class="login-role-card" onclick="document.getElementById('loginPortalScreen').style.display='none'; showAiBot(); loginAsRole('TRIAL_ADMIN');" style="display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1.1rem; background: #F5FAFC; border: 1px solid rgba(15,92,99,0.2); border-radius: 14px; cursor: pointer; text-align: left;">
+                        <div style="display: flex; align-items: center; gap: 0.85rem; pointer-events: none;">
+                            <div style="width: 42px; height: 42px; border-radius: 12px; background: rgba(15,92,99,0.08); display: flex; align-items: center; justify-content: center;"><i class="fa-solid fa-shield-halved text-emerald" style="font-size: 1.2rem;"></i></div>
+                            <div><strong style="color: #163A43; font-size: 0.92rem;">4. Trial Admin (Full Control)</strong><p style="font-size: 0.73rem; color: #52656D; margin-top: 2px;">Full System Control (Master Datasets, Feasibility Maps, Part 11 Audit Trail)</p></div>
+                        </div>
+                        <i class="fa-solid fa-arrow-right text-emerald" style="opacity: 0.6;"></i>
+                    </button>
+                </div>
+            </div>
+            <div style="text-align: center; font-size: 0.72rem; color: var(--text-dim); padding-top: 0.75rem; border-top: 1px solid rgba(15,92,99,0.08);">
+                <i class="fa-solid fa-lock" style="color: var(--primary); margin-right: 4px;"></i> 21 CFR Part 11 &amp; HIPAA Encrypted Access Portal
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Header with Clean Enterprise Nav Bar -->
+    <header class="app-header">
+        <div class="header-top-row">
+            <div class="header-left">
+                <div class="logo-icon-box">
+                    <i class="fa-solid fa-dna pulse-glow"></i>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">CuraMatch <span class="badge-pro">PRO</span></span>
+                    <span class="brand-sub">Clinical Trial Intelligence & Patient Screener</span>
+                </div>
+                
+                <button id="piiToggleBtn" class="privacy-pill-btn" onclick="togglePiiPrivacyMode()">
+                    <i class="fa-solid fa-user-shield"></i>
+                    <span id="piiToggleStatus">HIPAA: OFF</span>
+                </button>
+
+                <a href="presentation_deck.html" target="_blank" class="privacy-pill-btn" style="background: rgba(139,92,246,0.2); border-color: #6D28D9; color: #6D28D9; text-decoration: none;">
+                    <i class="fa-solid fa-tv"></i>
+                    <span>Presentation PPT</span>
+                </a>
+            </div>
+
+            <div class="header-right" style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; justify-content: flex-end;">
+                <!-- ACTIVE USER ROLE BADGE & LOGOUT BUTTON -->
+                <div id="userRoleBadgeBox" style="display: flex; align-items: center; gap: 0.5rem; background: #FFFFFF; padding: 0.35rem 0.65rem; border-radius: 30px; border: 1.5px solid var(--primary); box-shadow: 0 2px 8px rgba(15,92,99,0.06); white-space: nowrap;">
+                    <span style="font-size: 0.78rem; font-weight: 900; color: var(--primary);" id="activeRoleLabel">
+                        <i class="fa-solid fa-user-doctor text-cyan"></i> Role: 3. Doctor / Clinical Tester
+                    </span>
+                    <button onclick="logoutPortalScreen()" class="btn-secondary btn-sm" style="padding: 0.2rem 0.55rem; font-size: 0.72rem; border-radius: 20px; background: rgba(220,53,69,0.08); border: 1px solid rgba(220,53,69,0.3); color: #dc3545; font-weight: 800; cursor: pointer; white-space: nowrap;">
+                        <i class="fa-solid fa-right-from-bracket text-red"></i> Switch Role
+                    </button>
+                </div>
+
+                <!-- Pharma Sponsor Selector (HIDDEN FOR DOCTOR ROLE TO ENSURE BLINDED EVALUATION) -->
+                <div id="sponsorSelectorBox" class="selector-box" style="padding: 0.35rem 0.6rem; background: #FFFFFF; border: 1px solid rgba(111,66,193,0.2); border-radius: 8px;">
+                    <label style="font-size: 0.78rem; font-weight: 800; color: #6f42c1; white-space: nowrap;"><i class="fa-solid fa-building-flag text-purple"></i> Sponsor:</label>
+                    <select id="pharmaSponsorSelect" onchange="switchPharmaSponsor()" style="background: transparent; color: #163A43; font-weight: 800; font-size: 0.78rem; outline: none; cursor: pointer; max-width: 180px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+                        <option value="Merck">Merck & Co.</option>
+                        <option value="Lilly">Eli Lilly</option>
+                        <option value="AstraZeneca">AstraZeneca</option>
+                        <option value="Pfizer">Pfizer Inc.</option>
+                        <option value="Roche">Roche</option>
+                        <option value="Novartis">Novartis</option>
+                    </select>
+                </div>
+
+                <!-- Active Trial / Investigational Medicine Specs Selector -->
+                <div id="trialSelectorBox" class="selector-box" style="background: #FFFFFF; border: 1px solid rgba(15,92,99,0.15); padding: 0.35rem 0.65rem; border-radius: 8px; box-shadow: 0 2px 8px rgba(15,92,99,0.06); display: flex; align-items: center; gap: 0.5rem;">
+                    <label style="color: #0F5C63; font-size: 0.78rem; font-weight: 900; white-space: nowrap; display: flex; align-items: center; gap: 4px;">
+                        <i class="fa-solid fa-prescription-bottle-medical text-amber" style="font-size: 0.95rem;"></i> Trial Specs:
+                    </label>
+                    <select id="activeTrialSelect" onchange="switchTrialProtocol()" style="background: #FFFFFF; color: #163A43; border: 1px solid rgba(15,92,99,0.15); border-radius: 6px; padding: 0.25rem 0.5rem; font-weight: 800; font-size: 0.78rem; outline: none; cursor: pointer; max-width: 460px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">
+                        <option value="NCT-071204">NCT071204: Keytruda (Pembrolizumab) 200mg IV [TNBC]</option>
+                        <option value="NCT-048821">NCT048821: Jardiance (Empagliflozin) 10mg Oral [T2D]</option>
+                        <option value="NCT-060122">NCT060122: Tagrisso (Osimertinib) 80mg Oral [NSCLC]</option>
+                        <option value="NCT-051190">NCT051190: Perjeta + Herceptin IV Infusion [HER2+]</option>
+                        <option value="NCT-043321">NCT043321: Sacubitril/Valsartan 97/103mg BID [ARNI]</option>
+                        <option value="NCT-088310">NCT088310: Donanemab 700mg IV Infusion [AD]</option>
+                        <option value="NCT-099411">NCT099411: Onivyde 43mg/m2 IV Infusion [PDAC]</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- CLEAN ENTERPRISE TOP NAVIGATION BAR -->
+        <nav class="direct-nav-bar">
+            <button class="nav-tab-btn role-tab-pharma" data-tab="pharma-portal" onclick="switchNavTabDirect('pharma-portal')">
+                <i class="fa-solid fa-building-ngo text-purple"></i>
+                <span>Pharma Sponsor & Protocol Setup</span>
+            </button>
+
+            <button class="nav-tab-btn active role-tab-doctor" data-tab="upload-screening" onclick="switchNavTabDirect('upload-screening')">
+                <i class="fa-solid fa-cloud-arrow-up text-amber"></i>
+                <span>Patient Dataset & Prescriptions</span>
+            </button>
+
+            <button class="nav-tab-btn role-tab-doctor" data-tab="report-analyzer" onclick="switchNavTabDirect('report-analyzer')">
+                <i class="fa-solid fa-brain text-cyan"></i>
+                <span>Patient Past History Deep Scan</span>
+            </button>
+
+            <button class="nav-tab-btn role-tab-doctor" data-tab="patient-matching" onclick="switchNavTabDirect('patient-matching')">
+                <i class="fa-solid fa-square-check text-emerald"></i>
+                <span>Verified Candidates & Screener</span>
+            </button>
+
+            <button class="nav-tab-btn role-tab-doctor" data-tab="patient-dosing-tracker" onclick="switchNavTabDirect('patient-dosing-tracker')">
+                <i class="fa-solid fa-pills text-amber"></i>
+                <span>Dosing & Patient Care Governance</span>
+            </button>
+
+            <button class="nav-tab-btn role-tab-admin" data-tab="all-patients-dataset" onclick="switchNavTabDirect('all-patients-dataset')">
+                <i class="fa-solid fa-table-list text-emerald"></i>
+                <span>Master Dataset</span>
+            </button>
+
+            <button class="nav-tab-btn role-tab-admin" data-tab="realworld-solvers" onclick="switchNavTabDirect('realworld-solvers')">
+                <i class="fa-solid fa-lightbulb text-amber"></i>
+                <span>5 Challenge Solvers</span>
+            </button>
+
+            <button class="nav-tab-btn role-tab-admin" data-tab="trial-dashboard" onclick="switchNavTabDirect('trial-dashboard')">
+                <i class="fa-solid fa-chart-line text-cyan"></i>
+                <span>GIS Map & Velocity</span>
+            </button>
+
+            <button class="nav-tab-btn role-tab-admin" data-tab="sdv-compliance" onclick="switchNavTabDirect('sdv-compliance')">
+                <i class="fa-solid fa-shield-halved text-emerald"></i>
+                <span>FDA Audit SDV</span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Container -->
+    <main class="main-container">
+
+        <!-- PHARMA COMPANY REGISTRATION & TRIAL PROTOCOL SETUP -->
+        <section id="pharma-portal" class="tab-content">
+            <div class="card glass-panel mb-4">
+                <div class="card-header flex-between mb-3 pb-3">
+                    <div class="header-title">
+                        <i class="fa-solid fa-building-ngo icon-accent text-purple" style="font-size:1.5rem;"></i>
+                        <div>
+                            <h2 style="font-size:1.3rem; font-weight:900;">Pharma Company Registration & Trial Protocol Setup</h2>
+                            <p style="font-size:0.85rem; color:var(--text-muted);">Pharma companies register their trial drug protocols, target indications, and inclusion/exclusion parameters.</p>
+                        </div>
+                    </div>
+                    <button id="topRegisterPharmaBtn" class="btn-primary btn-large" onclick="openAddPharmaTrialModal()">
+                        <i class="fa-solid fa-plus-circle"></i> + Register New Pharma Trial Protocol
+                    </button>
+                </div>
+
+                <div class="grid-4col spacious-grid mb-4">
+                    <div class="metric-stat-card">
+                        <i class="fa-solid fa-industry stat-icon text-purple"></i>
+                        <div>
+                            <h3 id="pharmaActiveName">Merck & Co.</h3>
+                            <p>Active Sponsor Company</p>
+                        </div>
+                    </div>
+
+                    <div class="metric-stat-card">
+                        <i class="fa-solid fa-vial-circle-check stat-icon text-cyan"></i>
+                        <div>
+                            <h3 id="pharmaTrialCount">4 Active Trials</h3>
+                            <p>Sponsor Portfolio</p>
+                        </div>
+                    </div>
+
+                    <div class="metric-stat-card">
+                        <i class="fa-solid fa-hospital-user stat-icon text-emerald"></i>
+                        <div>
+                            <h3 id="pharmaEnrolledCount">1,840 Patients</h3>
+                            <p>Enrolled Across Sites</p>
+                        </div>
+                    </div>
+
+                    <div class="metric-stat-card">
+                        <i class="fa-solid fa-dollar-sign stat-icon text-amber"></i>
+                        <div>
+                            <h3>$42.5M</h3>
+                            <p>Total Trial Grant Budget</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- R&D INTER-DOSE AI SUGGESTIONS & POST-DOSE FEEDBACK CARD (FOR LOGIN 2) -->
+                <div id="researcherSuggestionsCard" class="glass-panel mb-4" style="display:none; border:1px solid rgba(15,92,99,0.15); background:#FFFFFF; padding:1.25rem; border-radius:14px; box-shadow: 0 4px 16px rgba(15,92,99,0.06);">
+                    <div class="flex-between mb-3 pb-2" style="border-bottom:1px solid rgba(15,92,99,0.1);">
+                        <div class="header-title">
+                            <i class="fa-solid fa-lightbulb" style="font-size:1.4rem; color:#0F5C63;"></i>
+                            <div>
+                                <h3 style="font-size:1.15rem; font-weight:900; color:#0F5C63; margin:0;">
+                                    Post-Dose Feedback & AI Improvement Suggestions Feed (Transmitted from Doctors)
+                                </h3>
+                                <p style="font-size:0.8rem; color:#52656D; margin-top:2px;">
+                                    Continuous inter-dose optimization recommendations received after each patient dosage administration.
+                                </p>
+                            </div>
+                        </div>
+                        <span class="badge-tag text-emerald"><i class="fa-solid fa-vial-circle-check"></i> R&D Live Stream</span>
+                    </div>
+
+                    <div id="researcherSuggestionsGrid" class="grid-3col spacious-grid">
+                        <!-- Dynamically populated by renderResearcherSuggestionsFeed() in app.js -->
+                    </div>
+                </div>
+
+                <div class="card-header flex-between mb-2">
+                    <h4 style="font-size:1.05rem; font-weight:800;"><i class="fa-solid fa-list-check"></i> Registered Pharma Sponsor Trial Protocols</h4>
+                    <div class="flex-row">
+                        <button id="tableRegisterPharmaBtn" onclick="openAddPharmaTrialModal()" class="btn-primary btn-sm" style="background:var(--amber); border-color:#B45309; color:#000; font-weight:800;">
+                            <i class="fa-solid fa-circle-plus"></i> + Add New Investigational Drug
+                        </button>
+                        <span class="badge-tag text-purple">Protocol Active</span>
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="clean-table">
+                        <thead>
+                            <tr>
+                                <th>Protocol NCT ID</th>
+                                <th>Pharma Sponsor Company</th>
+                                <th>Investigational Molecule & Specs</th>
+                                <th>Target Indication</th>
+                                <th>Study Phase</th>
+                                <th>Recruitment Target</th>
+                                <th>Active Trial Sites</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pharmaTrialsTbody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- UPLOAD PATIENT DATASET / PRESCRIPTIONS / ADD NEW PATIENTS -->
+        <section id="upload-screening" class="tab-content active">
+            <div class="card glass-panel mb-4">
+                <div class="card-header flex-between mb-3 pb-3">
+                    <div class="header-title">
+                        <i class="fa-solid fa-cloud-arrow-up icon-accent text-amber" style="font-size:1.5rem;"></i>
+                        <div>
+                            <h2 style="font-size:1.3rem; font-weight:900;">Upload Patient Dataset, Doctor Prescriptions & Add Patients</h2>
+                            <p style="font-size:0.85rem; color:var(--text-muted);">Upload patient datasets (.CSV / .JSON), scan doctor prescriptions, or manually register new patient records.</p>
+                        </div>
+                    </div>
+                    <div class="flex-row">
+                        <button class="btn-primary btn-large" onclick="openAddNewPatientModal()">
+                            <i class="fa-solid fa-user-plus"></i> + Add New Patient Record
+                        </button>
+                        <button class="btn-secondary" onclick="loadSampleDatasetForUpload()">
+                            <i class="fa-solid fa-bolt"></i> Batch Screen Dataset (12 Patients)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid-2col spacious-grid mb-4">
+                    <!-- Prescription Image OCR Dropzone -->
+                    <div class="upload-drop-zone" onclick="document.getElementById('presImgInput').click()" style="border-color:var(--cyan); background:rgba(20,184,166,0.05);">
+                        <i class="fa-solid fa-file-image upload-icon text-cyan"></i>
+                        <h3 style="font-size:1.1rem; font-weight:800; margin-top:0.4rem;">Upload Doctor Prescription Image (.PNG, .JPG, .WEBP)</h3>
+                        <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem;">
+                            AI Computer Vision OCR scans handwritten/printed prescriptions, lab reports, and doctor notes.
+                        </p>
+                        <button class="btn-primary btn-sm mt-3" type="button" onclick="event.stopPropagation(); triggerSamplePrescriptionOcr()">
+                            <i class="fa-solid fa-eye"></i> Try Sample Doctor Prescription Image Scan
+                        </button>
+                        <input type="file" id="presImgInput" accept="image/*" class="hidden" onchange="handlePrescriptionImageOcr(event)">
+                    </div>
+
+                    <!-- Dataset CSV/JSON Dropzone -->
+                    <div class="upload-drop-zone" onclick="document.getElementById('csvFileInput').click()">
+                        <i class="fa-solid fa-file-csv upload-icon text-emerald"></i>
+                        <h3 style="font-size:1.1rem; font-weight:800; margin-top:0.4rem;">Upload Hospital Dataset (.CSV or .JSON)</h3>
+                        <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0.25rem;">
+                            Batch screen 5,000+ patient records at once. Only eligible candidate results are listed!
+                        </p>
+                        <input type="file" id="csvFileInput" accept=".csv,.json" class="hidden" onchange="handleFileUpload(event)">
+                    </div>
+                </div>
+
+                <!-- Live Prescription OCR Scanning Animation & Visual Extraction Result Box -->
+                <div id="ocrScanPreviewBox" class="card glass-panel hidden mb-4" style="background:rgba(5,10,21,0.9); border-color:var(--cyan);">
+                    <div class="card-header flex-between">
+                        <div class="header-title">
+                            <i class="fa-solid fa-sparkles text-cyan"></i>
+                            <h4 style="font-size:1rem; font-weight:800;" id="ocrStatusTitle">AI Computer Vision Scanning Prescription Image...</h4>
+                        </div>
+                        <span class="badge-ai-pill">OCR OCR-v4 Model</span>
+                    </div>
+
+                    <div class="grid-2col spacious-grid">
+                        <!-- Image Container with Scanning Grid laser line -->
+                        <div class="ocr-image-wrapper">
+                            <div class="ocr-scanner-laser"></div>
+                            <img id="ocrPreviewImg" src="https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=600&q=80" alt="Doctor Prescription Image">
+                        </div>
+
+                        <!-- Extracted Data Form & Confidence Badges -->
+                        <div>
+                            <h5 style="font-size:0.85rem; color:var(--primary); font-weight:800; margin-bottom:0.6rem;">
+                                <i class="fa-solid fa-list-check"></i> Extracted Medical Parameters from Image:
+                            </h5>
+
+                            <div id="ocrExtractedDataList" style="display:flex; flex-direction:column; gap:0.5rem;">
+                                <!-- Filled by JS -->
+                            </div>
+
+                            <button class="btn-primary btn-full mt-3" onclick="sendOcrDataToLiveScreener()">
+                                <i class="fa-solid fa-bolt"></i> Send Extracted Data to Live Screener
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="uploadResultsBox" class="hidden">
+                    <div class="grid-4col spacious-grid mb-4">
+                        <div class="metric-stat-card">
+                            <i class="fa-solid fa-users stat-icon text-cyan"></i>
+                            <div>
+                                <h3 id="statTotalUploaded">12</h3>
+                                <p>Total Uploaded Dataset</p>
+                            </div>
+                        </div>
+
+                        <div class="metric-stat-card">
+                            <i class="fa-solid fa-user-check stat-icon text-emerald"></i>
+                            <div>
+                                <h3 id="statEligibleFound" style="color:#0F5C63;">8</h3>
+                                <p>Eligible Candidates Listed</p>
+                            </div>
+                        </div>
+
+                        <div class="metric-stat-card">
+                            <i class="fa-solid fa-user-xmark stat-icon text-red"></i>
+                            <div>
+                                <h3 id="statExcludedFound" style="color:var(--danger);">4</h3>
+                                <p>Filtered Out (Ineligible)</p>
+                            </div>
+                        </div>
+
+                        <div class="metric-stat-card">
+                            <i class="fa-solid fa-stopwatch stat-icon text-purple"></i>
+                            <div>
+                                <h3 id="statScreenDuration" style="color:#6D28D9;">0.42s</h3>
+                                <p>Batch Execution Time</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-header flex-between mb-2">
+                        <div class="header-title">
+                            <i class="fa-solid fa-user-check text-emerald"></i>
+                            <h4 style="font-size:1.05rem; font-weight:800;">DATASET BATCH RESULTS: LIST OF ELIGIBLE PATIENTS ONLY</h4>
+                        </div>
+                        <div class="flex-row">
+                            <button id="filterEligibleToggleBtn" class="btn-secondary btn-sm" onclick="toggleFilterEligibleOnly()">
+                                <i class="fa-solid fa-filter text-emerald"></i> Showing: ONLY Eligible Candidates
+                            </button>
+                            <button class="btn-primary btn-sm" onclick="exportScreeningResultsCsv()">
+                                <i class="fa-solid fa-download"></i> Export Eligible Patients CSV
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-wrapper mb-3">
+                        <table class="clean-table">
+                            <thead>
+                                <tr>
+                                    <th>Patient ID</th>
+                                    <th>Full Name</th>
+                                    <th>Age / Sex</th>
+                                    <th>Primary Diagnosis</th>
+                                    <th>HbA1c %</th>
+                                    <th>eGFR</th>
+                                    <th>Match Score</th>
+                                    <th>Eligible Result</th>
+                                    <th>Action Links & PDF</th>
+                                </tr>
+                            </thead>
+                            <tbody id="uploadResultsTbody">
+                                <!-- Populated dynamically by JS (ONLY ELIGIBLE PATIENTS) -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="flex-between p-3 glass-panel" style="background:rgba(245,158,11,0.1); border:1px solid var(--amber); border-radius:12px;">
+                        <div>
+                            <strong style="color:#B45309; font-size:0.95rem;"><i class="fa-solid fa-arrow-right"></i> Open Patient Past History Deep Scan</strong>
+                            <p style="font-size:0.8rem; color:var(--text-muted);">Upload past medical history files for eligible candidates to perform deep 200-page AI verification.</p>
+                        </div>
+                        <button class="btn-primary" onclick="switchNavTabDirect('report-analyzer')">
+                            Open Past History Deep Scan <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- UPLOAD ELIGIBLE PATIENT PAST HISTORY & 200-PAGE AI SCAN -->
+        <section id="report-analyzer" class="tab-content">
+            <div class="card glass-panel mb-4">
+                <div class="card-header flex-between mb-3 pb-3">
+                    <div class="header-title">
+                        <i class="fa-solid fa-file-medical icon-accent text-cyan" style="font-size:1.5rem;"></i>
+                        <div>
+                            <h2 style="font-size:1.3rem; font-weight:900;">Upload Eligible Patient Past Medical History File</h2>
+                            <p style="font-size:0.85rem; color:var(--text-muted);">Select any eligible candidate from screening and upload their complete past hospital history (.PDF, .TXT, .PNG) for deep 200-page AI verification.</p>
+                        </div>
+                    </div>
+                    <button class="btn-primary btn-large" onclick="run200PageReportAnalysis()">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> AI Deep Scan Past History File
+                    </button>
+                </div>
+
+                <div class="grid-2col spacious-grid">
+                    <div>
+                        <!-- Select Eligible Patient for Past History Scan -->
+                        <div class="form-group mb-3" style="background:rgba(20,184,166,0.08); border:2px solid var(--primary); padding:1rem; border-radius:12px;">
+                            <label class="form-label" style="color:var(--primary); font-weight:800; font-size:0.92rem;">
+                                <i class="fa-solid fa-user-check"></i> Select Eligible Patient from Dataset Screening:
+                            </label>
+                            <select id="step3PatientSelect" class="form-select" style="font-weight:700; font-size:0.95rem; padding:0.75rem;" onchange="updateStep3PatientHistoryFile()">
+                                <option value="PT-10201">PT-10201: Dr. Evelyn Vance (59y, F) - Keytruda Immunotherapy</option>
+                                <option value="PT-10029">PT-10029: Eleanor Vance (62y, F) - Type 2 Diabetes (HbA1c 8.4%)</option>
+                                <option value="PT-10034">PT-10034: Marcus Sterling (48y, M) - Type 2 Diabetes (HbA1c 8.6%)</option>
+                                <option value="PT-10088">PT-10088: Dr. Aris Thorne (66y, M) - NSCLC EGFR Exon 19 del</option>
+                                <option value="PT-10102">PT-10102: Rachel Green (52y, F) - Type 2 Diabetes (HbA1c 9.1%)</option>
+                                <option value="PT-10159">PT-10159: Helena Wayne (61y, F) - Type 2 Diabetes (HbA1c 8.0%)</option>
+                            </select>
+                        </div>
+
+                        <!-- Past History Dropzone -->
+                        <div class="upload-drop-zone mb-3" style="padding: 1.8rem;" onclick="document.getElementById('reportPdfInput').click()">
+                            <i class="fa-solid fa-file-pdf upload-icon text-red"></i>
+                            <h4 style="font-size:1.05rem; font-weight:800;" id="step3DropzoneTitle">Upload Past Medical History & Hospital Dossier (.PDF / .PNG / .TXT)</h4>
+                            <p style="font-size:0.78rem; color:var(--text-muted);">AI deep scans pathology, prior surgical notes, 24-month EMR history, MRI brain scans, and genomic NGS panels.</p>
+                            <input type="file" id="reportPdfInput" accept=".pdf,.txt,.png,.jpg,.jpeg" class="hidden" onchange="run200PageReportAnalysis()">
+                        </div>
+
+                        <div class="form-group mb-3" style="background:#F5FAFC; border:1px solid var(--border-glow); padding:1rem; border-radius:12px;">
+                            <label class="form-label" style="color:var(--primary); font-weight:800; font-size:0.9rem;">
+                                <i class="fa-solid fa-disease"></i> Target Protocol Verification Code:
+                            </label>
+                            <select id="reportTargetDisease" class="form-select" style="font-weight:700;" onchange="reMatch200PageReportForDisease()">
+                                <option value="TNBC">Keytruda (Pembrolizumab) 200mg IV Q3W [TNBC PD-L1 Immunotherapy - NCT071204]</option>
+                                <option value="NSCLC">Tagrisso (Osimertinib) 80mg QD [NSCLC EGFR Exon 19 TKI - NCT060122]</option>
+                                <option value="T2D">Jardiance (Empagliflozin) 10mg QD [SGLT2i Diabetes - NCT048821]</option>
+                                <option value="HER2">Perjeta + Herceptin IV Infusion [HER2 Targeted mAb - NCT051190]</option>
+                                <option value="MI">Sacubitril/Valsartan 97/103mg BID [ARNI Cardiac Remodeling - NCT043321]</option>
+                                <option value="AD">Donanemab 700mg IV Infusion Q4W [Early Alzheimer's Anti-Amyloid - NCT088310]</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div id="reportAnalysisBox" class="glass-panel mb-3" style="background:#FFFFFF; padding:1.25rem;">
+                            <div class="flex-between mb-3">
+                                <div>
+                                    <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">VERIFIED AI MATCH SCORE</span>
+                                    <h2 id="reportMatchScore" style="font-size:2rem; color:#0F5C63; font-weight:900;">96% VERIFIED MATCH</h2>
+                                </div>
+                                <span id="reportMatchBadge" class="badge-ai-pill">Past History Verified in 1.12s</span>
+                            </div>
+
+                            <h4 style="font-size:0.88rem; color:var(--text-muted); font-weight:700; margin-bottom:0.6rem;">
+                                <i class="fa-solid fa-bookmark text-cyan"></i> Verified Past Medical History Page Citations:
+                            </h4>
+
+                            <div id="reportCitationsList" style="display:flex; flex-direction:column; gap:0.6rem; max-height:220px; overflow-y:auto;">
+                                <!-- Rendered dynamically by JS -->
+                            </div>
+                        </div>
+
+                        <!-- AI HALLUCINATION PREVENTION & VERIFICATION CARD -->
+                        <div class="card glass-panel mb-3" style="border: 2px solid var(--amber); background: rgba(245,158,11,0.06); padding: 1rem;">
+                            <div class="flex-between mb-2">
+                                <strong style="color: #B45309; font-size: 0.95rem;">
+                                    <i class="fa-solid fa-shield-halved"></i> AI Hallucination Safeguard & Verification Engine
+                                </strong>
+                                <span class="badge-tag text-amber" style="font-size: 0.72rem;">Zero-Hallucination Protocol</span>
+                            </div>
+                            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+                                Prevents AI data hallucinations during document splitting by enforcing 4-tier source grounding, LOINC regex cross-checking, & 21 CFR Part 11 audit trails.
+                            </p>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button class="btn-primary btn-sm" onclick="runAntiHallucinationCheck()" style="flex: 1; background: linear-gradient(135deg, #f59e0b, #d97706); border: 2px solid #fbbf24; color: #000; font-weight: 900;">
+                                    <i class="fa-solid fa-shield-halved"></i> Run Source Grounding & Discrepancy Verification
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- LIVE HIGH-TECH ANTI-HALLUCINATION & DISCREPANCY DETECTOR PANEL -->
+                        <div id="hallucinationAuditResultsBox" class="card glass-panel hidden mb-3" style="border: 2px solid var(--amber); background: #FFFBEB; padding: 1.25rem;">
+                            <div class="flex-between mb-3 pb-2" style="border-bottom: 1px solid rgba(245,158,11,0.2);">
+                                <div>
+                                    <span class="badge-tag text-amber mb-1"><i class="fa-solid fa-shield-halved"></i> 21 CFR Part 11 Audit Verified</span>
+                                    <h4 style="font-size: 1.1rem; font-weight: 900; color: #163A43; margin: 0;">
+                                        <i class="fa-solid fa-microchip text-amber"></i> AI Data Hallucination & Discrepancy Verification Log
+                                    </h4>
+                                </div>
+                                <span class="badge-tag text-emerald" style="font-size: 0.8rem; font-weight: 800;"><i class="fa-solid fa-circle-check"></i> 0% Hallucination Rate</span>
+                            </div>
+
+                            <!-- 4-TIER GROUNDING METRICS GRID -->
+                            <div class="grid-4col spacious-grid mb-3">
+                                <div style="background:#F5FAFC; border: 1px solid var(--accent); padding: 0.75rem; border-radius: 8px;">
+                                    <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">1. LOINC REGEX MATCH</div>
+                                    <strong style="color: #0F5C63; font-size: 0.95rem;">100% GROUNDED</strong>
+                                </div>
+                                <div style="background:#F5FAFC; border: 1px solid var(--primary); padding: 0.75rem; border-radius: 8px;">
+                                    <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">2. ICD-10 EHR ANCHOR</div>
+                                    <strong style="color: var(--primary); font-size: 0.95rem;">100% VERIFIED</strong>
+                                </div>
+                                <div style="background:#F5FAFC; border: 1px solid var(--purple); padding: 0.75rem; border-radius: 8px;">
+                                    <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">3. SYNTHETIC DETECTOR</div>
+                                    <strong style="color: #6D28D9; font-size: 0.95rem;">0 HALLUCINATIONS</strong>
+                                </div>
+                                <div style="background:#F5FAFC; border: 1px solid var(--amber); padding: 0.75rem; border-radius: 8px;">
+                                    <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">4. SHA256 AUDIT HASH</div>
+                                    <strong style="color: #B45309; font-size: 0.85rem;">SHA256: e8f9...4b</strong>
+                                </div>
+                            </div>
+
+                            <!-- DISCREPANCY AUDIT TABLE -->
+                            <div style="font-size: 0.85rem; font-weight: 800; color: #B45309; margin-bottom: 0.5rem;">
+                                <i class="fa-solid fa-list-check"></i> Field-by-Field Grounding & Discrepancy Detection Table:
+                            </div>
+                            <div class="table-wrapper mb-3">
+                                <table class="clean-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Clinical Parameter</th>
+                                            <th>EHR Source File (Quest/Epic)</th>
+                                            <th>eCRF Trial Submission</th>
+                                            <th>Hallucination & Discrepancy Status</th>
+                                            <th>Audit Result</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="hallucinationAuditTbody">
+                                        <!-- Dynamically populated by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="p-3 glass-panel" style="background:rgba(20,184,166,0.1); border:1px solid var(--primary); border-radius:12px;">
+                            <strong style="color:var(--primary); font-size:0.95rem;"><i class="fa-solid fa-envelope"></i> Send Consent Email & View PDF Docs</strong>
+                            <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem;">View candidates who passed past history verification with direct PDF document view links.</p>
+                            <button class="btn-primary btn-full" onclick="switchNavTabDirect('patient-matching')">
+                                View Final Verified Candidates & PDF Docs <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FINAL RESULTS & LIVE PATIENT SCREENER -->
+        <section id="patient-matching" class="tab-content">
+            <!-- TOP HEADER CARD -->
+            <div class="card glass-panel mb-4" style="border:2px solid var(--accent); background:rgba(16,185,129,0.08);">
+                <div class="card-header flex-between">
+                    <div class="header-title">
+                        <i class="fa-solid fa-square-check text-emerald" style="font-size:1.6rem;"></i>
+                        <div>
+                            <h2 style="font-size:1.3rem; font-weight:900; color:#0F5C63;">Final Verified Candidates & Eligibility Screener</h2>
+                            <p style="font-size:0.85rem; color:var(--text-muted);">List of verified eligible candidates with patient details, 1-click consent email dispatch & PDF view options!</p>
+                        </div>
+                    </div>
+                    <a href="CuraMatch_Clinical_Trial_Screening_Report.html" target="_blank" class="btn-primary btn-large" style="text-decoration:none;">
+                        <i class="fa-solid fa-file-pdf"></i> Download Master Trial Report PDF
+                    </a>
+                </div>
+            </div>
+
+            <!-- FINAL VERIFIED CANDIDATES TABLE -->
+            <div class="card glass-panel mb-4">
+                <div class="card-header flex-between mb-3 pb-3">
+                    <div class="header-title">
+                        <i class="fa-solid fa-user-check text-emerald" style="font-size:1.2rem;"></i>
+                        <h3 style="font-size:1.1rem; font-weight:800;">VERIFIED PATIENT CANDIDATES WHO PASSED DEEP SCREENING</h3>
+                    </div>
+                    <span class="badge-tag text-emerald"><i class="fa-solid fa-shield-halved"></i> 21 CFR Part 11 Verified</span>
+                </div>
+
+                <div class="table-wrapper mb-2">
+                    <table class="clean-table">
+                        <thead>
+                            <tr>
+                                <th>Patient ID</th>
+                                <th>Patient Full Name</th>
+                                <th>Age / Gender</th>
+                                <th>Primary Diagnosis</th>
+                                <th>HbA1c / Labs</th>
+                                <th>eGFR Rate</th>
+                                <th>Verified Match Score</th>
+                                <th>Verification Status</th>
+                                <th>Action 1: Send Consent Email</th>
+                                <th>Action 2: View PDF Doc</th>
+                            </tr>
+                        </thead>
+                        <tbody id="step4VerifiedTbody">
+                            <!-- Populated dynamically by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- CLEAN ACTION FOOTER FOR VERIFIED CANDIDATES SCREENER -->
+            <div class="card glass-panel p-4" style="background: rgba(16,185,129,0.08); border: 2px solid var(--accent); border-radius: 14px;">
+                <div class="flex-between">
+                    <div>
+                        <h4 style="font-size: 1.1rem; font-weight: 900; color: #0F5C63; margin-bottom: 4px;">
+                            <i class="fa-solid fa-shield-halved"></i> Candidate Screener Action Center
+                        </h4>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">
+                            All candidate patient records are 21 CFR Part 11 verified against EMR source files. Send GCP digital trial consent forms or open patient dossier reports directly.
+                        </p>
+                    </div>
+                    <div style="display: flex; gap: 0.75rem;">
+                        <a href="CuraMatch_Clinical_Trial_Screening_Report.html" target="_blank" class="btn-secondary" style="text-decoration: none; padding: 0.6rem 1.1rem;">
+                            <i class="fa-solid fa-file-pdf text-red"></i> View Executive Screening Report
+                        </a>
+                        <button class="btn-primary" onclick="switchNavTabDirect('patient-dosing-tracker')" style="background: linear-gradient(135deg, #f59e0b, #d97706); border: 2px solid #fbbf24; color: #000; font-weight: 900; padding: 0.6rem 1.2rem;">
+                            <i class="fa-solid fa-pills"></i> Open Patient Dosing Tracker <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE: PATIENT TRIAL DOSING SCHEDULE & CONTINUOUS CARE GOVERNANCE -->
+        <section id="patient-dosing-tracker" class="tab-content">
+            <div class="card glass-panel mb-4" style="border:2px solid var(--amber); background:rgba(245,158,11,0.06);">
+                <div class="card-header flex-between mb-3 pb-3">
+                    <div class="header-title">
+                        <i class="fa-solid fa-prescription-bottle-medical icon-accent text-amber" style="font-size:1.6rem;"></i>
+                        <div>
+                            <h2 style="font-size:1.3rem; font-weight:900; color:#B45309;">Active Trial Dosing Schedule & Continuous Care Governance</h2>
+                            <p style="font-size:0.85rem; color:var(--text-muted);">Once consent is accepted, track prescribed trial drug dosages, daily patient adherence %, vital sign trends, and log updates regularly.</p>
+                        </div>
+                    </div>
+                    <div class="flex-row">
+                        <a href="dosing_dashboard.html" target="_blank" class="btn-primary btn-large" style="background: var(--amber); color: #000; border: none; text-decoration: none;">
+                            <i class="fa-solid fa-prescription-bottle-medical"></i> Open Full Dosing Dashboard
+                        </a>
+                        <button class="btn-primary btn-large" onclick="downloadPatientDosingPdfReport()">
+                            <i class="fa-solid fa-file-pdf"></i> Download Patient Dosing PDF Report
+                        </button>
+                        <button class="btn-secondary" onclick="openLogDoseModal()">
+                            <i class="fa-solid fa-plus-circle"></i> + Log Daily Dose Entry
+                        </button>
+                    </div>
+                </div>
+
+                <!-- PATIENT SELECTOR FOR DOSING & GOVERNANCE -->
+                <div class="grid-2col spacious-grid mb-4">
+                    <div class="form-group mb-0" style="background:#F5FAFC; border:1px solid var(--border-color); padding:1rem; border-radius:12px;">
+                        <label class="form-label" style="color:#B45309; font-weight:800; font-size:0.9rem;">
+                            <i class="fa-solid fa-user-check"></i> Select Enrolled Patient Candidate:
+                        </label>
+                        <select id="dosingPatientSelect" class="form-select" style="font-weight:700;" onchange="updateDosingPatientView()">
+                            <option value="PT-10201">PT-10201: Dr. Evelyn Vance - Keytruda (Pembrolizumab) 200mg IV Q3W</option>
+                            <option value="PT-10029">PT-10029: Eleanor Vance - Jardiance (Empagliflozin) 10mg Oral QD</option>
+                            <option value="PT-10034">PT-10034: Marcus Sterling - Jardiance (Empagliflozin) 10mg Oral QD</option>
+                            <option value="PT-10088">PT-10088: Dr. Aris Thorne - Tagrisso (Osimertinib) 80mg Oral QD</option>
+                            <option value="PT-10102">PT-10102: Rachel Green - Jardiance (Empagliflozin) 10mg Oral QD</option>
+                            <option value="PT-10159">PT-10159: Helena Wayne - Jardiance (Empagliflozin) 10mg Oral QD</option>
+                        </select>
+                    </div>
+
+                    <div style="background:rgba(16,185,129,0.1); border:1px solid var(--accent); padding:1rem; border-radius:12px; display:flex; align-items:center; justify-content:space-between;">
+                        <div>
+                            <span style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">CONSENT STATUS</span>
+                            <h3 style="font-size:1.1rem; color:#0F5C63; font-weight:900; margin-top:0.15rem;">
+                                <i class="fa-solid fa-file-signature"></i> CONSENT ACCEPTED & SIGNED
+                            </h3>
+                            <span style="font-size:0.78rem; color:var(--text-muted);">21 CFR Part 11 Audit Timestamp: Aug 14, 2026</span>
+                        </div>
+                        <span class="badge-tag text-emerald" style="font-size:0.85rem; padding:0.4rem 0.8rem;"><i class="fa-solid fa-circle-check"></i> Active Dosing</span>
+                    </div>
+                </div>
+
+                <!-- METRICS GRID FOR DOSING & GOVERNANCE -->
+                <div class="grid-4col spacious-grid mb-4">
+                    <div class="metric-stat-card">
+                        <i class="fa-solid fa-capsules stat-icon text-amber"></i>
+                        <div>
+                            <h3 id="doseDrugName">Keytruda 200mg</h3>
+                            <p id="doseRegimen">IV Infusion Q3W</p>
+                        </div>
+                    </div>
+
+                    <div class="metric-stat-card">
+                        <i class="fa-solid fa-chart-line stat-icon text-emerald"></i>
+                        <div>
+                            <h3 id="doseAdherenceRate" style="color:#0F5C63;">98.4%</h3>
+                            <p>Medication Adherence Rate</p>
+                        </div>
+                    </div>
+
+                    <div class="metric-stat-card">
+                        <i class="fa-solid fa-vial-circle-check stat-icon text-cyan"></i>
+                        <div>
+                            <h3 id="doseBiomarkerTrend" style="color:var(--primary);">-1.5% HbA1c</h3>
+                            <p>Therapeutic Response</p>
+                        </div>
+                    </div>
+
+                    <div class="metric-stat-card">
+                        <i class="fa-solid fa-shield-heart stat-icon text-purple"></i>
+                        <div>
+                            <h3 id="doseSafetyStatus" style="color:#6D28D9;">0 Serious AEs</h3>
+                            <p>Safety & Governance</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- POST-DOSE 1 INTER-DOSE ANALYTICS & DOSE 2 OPTIMIZATION CARD -->
+                <div class="card glass-panel mb-4" style="border: 2px solid var(--cyan); background: #F5FAFC; padding: 1.25rem;">
+                    <div class="card-header flex-between mb-3 pb-2" style="border-bottom: 1px solid rgba(20,184,166,0.2);">
+                        <div class="header-title">
+                            <i class="fa-solid fa-chart-line text-cyan" style="font-size: 1.4rem;"></i>
+                            <div>
+                                <h3 style="font-size: 1.15rem; font-weight: 900; color: var(--cyan);">Post-Dose 1 Impact & Dose 2 Optimization Analytics</h3>
+                                <p style="font-size: 0.82rem; color: var(--text-muted);">Inter-dose window analytics evaluating Dose 1 efficacy, patient response, and prescriptive Dose 2 adjustments.</p>
+                            </div>
+                        </div>
+                        <span class="badge-tag text-cyan"><i class="fa-solid fa-bolt"></i> Inter-Dose Window Active</span>
+                    </div>
+
+                    <div class="grid-3col spacious-grid mb-3">
+                        <!-- Panel 1: Dose 1 Impact Analytics -->
+                        <div style="background:#F5FAFC; border: 1px solid var(--border-color); padding: 1rem; border-radius: 12px;">
+                            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700;">1. DOSE 1 CLINICAL IMPACT</span>
+                            <h4 id="interDoseBiomarkerVal" style="font-size: 1.1rem; color: #0F5C63; font-weight: 900; margin-top: 0.35rem;">
+                                HbA1c: 8.4% -> 7.4% (-1.0% drop)
+                            </h4>
+                            <p id="interDoseImpactText" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">
+                                Therapeutic biomarker response detected with 98.4% medication adherence rate.
+                            </p>
+                        </div>
+
+                        <!-- Panel 2: Dose 2 Prescriptive Recommendations -->
+                        <div style="background:#F5FAFC; border: 1px solid var(--purple); padding: 1rem; border-radius: 12px;">
+                            <span style="font-size: 0.75rem; color: #6D28D9; font-weight: 700;">2. WHAT TO IMPROVE FOR DOSE 2</span>
+                            <h4 id="interDoseRecVal" style="font-size: 1.05rem; color: #163A43; font-weight: 900; margin-top: 0.35rem;">
+                                Maintain Prescribed 200mg IV Regimen
+                            </h4>
+                            <p id="interDoseImprovementText" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">
+                                Recommendation: Pre-medicate with Antihistamine 30 min prior to Dose 2 to mitigate Grade 1 fatigue.
+                            </p>
+                        </div>
+
+                        <!-- Panel 3: Personalized Patient Impact -->
+                        <div style="background:#F5FAFC; border: 1px solid var(--amber); padding: 1rem; border-radius: 12px;">
+                            <span style="font-size: 0.75rem; color: #B45309; font-weight: 700;">3. PERSONALIZED PATIENT IMPACT</span>
+                            <h4 id="interDoseQualityVal" style="font-size: 1.1rem; color: #B45309; font-weight: 900; margin-top: 0.35rem;">
+                                Quality of Life Score: 88/100
+                            </h4>
+                            <p id="interDosePatientText" style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">
+                                Stable vital signs. Mild fatigue resolved. Cleared for Dose 2 administration.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DAILY DOSING LOG TABLE & REGULAR UPDATES -->
+                <div class="card-header flex-between mb-2">
+                    <h4 style="font-size:1.05rem; font-weight:800;">
+                        <i class="fa-solid fa-list-check text-amber"></i> CONTINUOUS PATIENT DOSING TIMELINE & REGULAR PROGRESS LOG
+                    </h4>
+                    <div class="flex-row">
+                        <button class="btn-primary btn-sm" onclick="downloadPatientDosingPdfReport()">
+                            <i class="fa-solid fa-file-pdf"></i> Download PDF Governance Report
+                        </button>
+                        <button class="btn-primary btn-sm" style="background:var(--amber); border-color:#B45309; color:#000; font-weight:800;" onclick="transmitReportToResearchers()">
+                            <i class="fa-solid fa-paper-plane"></i> Transmit Report to Researchers
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-wrapper mb-4">
+                    <table class="clean-table">
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Cycle / Visit</th>
+                                <th>Prescribed Trial Medicine & Dose</th>
+                                <th>Administration Status</th>
+                                <th>Adherence Method</th>
+                                <th>Biomarker / Lab Result</th>
+                                <th>Adverse Events / Side Effects</th>
+                                <th>Governance Audit</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dosingTimelineTbody">
+                            <!-- Populated dynamically by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 4: MASTER PATIENT DATASET TABLE -->
+        <section id="all-patients-dataset" class="tab-content">
+            <div class="card glass-panel mb-4">
+                <div class="card-header flex-between">
+                    <div class="header-title">
+                        <i class="fa-solid fa-table-list icon-accent"></i>
+                        <h3>Master Candidate Patient Dataset (12 Records)</h3>
+                    </div>
+                    <div class="flex-row">
+                        <a href="patients_clinical_dataset.csv" download class="btn-secondary btn-sm" style="text-decoration:none;">
+                            <i class="fa-solid fa-file-csv text-emerald"></i> Export CSV Dataset
+                        </a>
+                        <a href="patients_fhir_dataset.json" download class="btn-secondary btn-sm" style="text-decoration:none;">
+                            <i class="fa-solid fa-file-code text-cyan"></i> Export FHIR JSON
+                        </a>
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="clean-table">
+                        <thead>
+                            <tr>
+                                <th>Patient ID</th>
+                                <th>Full Name</th>
+                                <th>Age / Sex</th>
+                                <th>Primary Diagnosis (ICD-10)</th>
+                                <th>HbA1c %</th>
+                                <th>eGFR Renal</th>
+                                <th>Stroke History</th>
+                                <th>Active Medications</th>
+                                <th>Trial Match Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="masterDatasetTbody">
+                            <!-- Filled dynamically by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 5: REAL-WORLD 5 PROBLEM SOLVERS -->
+        <section id="realworld-solvers" class="tab-content">
+            <div class="mb-4">
+                <h2 class="section-title"><i class="fa-solid fa-shield-heart icon-accent"></i> Real-World Clinical Trial Challenge Solvers</h2>
+                <p class="section-subtitle">Click any challenge card below to execute the live AI solution for the 5 biggest industry bottlenecks.</p>
+            </div>
+
+            <div class="grid-3col spacious-grid mb-4">
+                <div class="card glass-panel challenge-card">
+                    <div class="challenge-num">01</div>
+                    <div class="challenge-header">
+                        <i class="fa-solid fa-file-pdf text-red challenge-icon"></i>
+                        <h3>Complex Criteria vs. Buried Data</h3>
+                    </div>
+                    <p class="challenge-desc">EMR only says <em>"Stage IV Lung Cancer"</em>. EGFR mutation is buried on page 38 of a pathology PDF, and MRI brain notes are from 3 months ago.</p>
+                    <button class="btn-primary btn-full mt-3" onclick="runSolverScenario('buriedData')">
+                        <i class="fa-solid fa-magnifying-glass-doc"></i> Deep Scan Buried PDFs & Notes
+                    </button>
+                </div>
+
+                <div class="card glass-panel challenge-card">
+                    <div class="challenge-num">02</div>
+                    <div class="challenge-header">
+                        <i class="fa-solid fa-diagram-nested text-cyan challenge-icon"></i>
+                        <h3>Fragmented Data Silos (Epic / Cerner / Quest)</h3>
+                    </div>
+                    <p class="challenge-desc">Patient record split across Primary Care (Epic), Cardiologist (Cerner), and Bloodwork (Quest). Cannot search manually.</p>
+                    <button class="btn-primary btn-full mt-3" onclick="runSolverScenario('dataSilos')">
+                        <i class="fa-solid fa-link-slash"></i> Sync Federated Multi-Portal EHR
+                    </button>
+                </div>
+
+                <div class="card glass-panel challenge-card">
+                    <div class="challenge-num">03</div>
+                    <div class="challenge-header">
+                        <i class="fa-solid fa-stopwatch text-amber challenge-icon"></i>
+                        <h3>Exhausting 5,000-Patient Manual Screening</h3>
+                    </div>
+                    <p class="challenge-desc">Nurse spends 2 hours reading 198 pages, only to find an excluded steroid taken 5 weeks ago on page 198. 4,999 records left!</p>
+                    <button class="btn-primary btn-full mt-3" onclick="runSolverScenario('batchScreening')">
+                        <i class="fa-solid fa-bolt-lightning"></i> Run 5,000-Batch 2-Sec Screener
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid-2col spacious-grid mb-4">
+                <div class="card glass-panel challenge-card">
+                    <div class="challenge-num">04</div>
+                    <div class="challenge-header">
+                        <i class="fa-solid fa-shield-exclamation text-red challenge-icon"></i>
+                        <h3>FDA Audit & Protocol Deviation Risk</h3>
+                    </div>
+                    <p class="challenge-desc">Kidney lab cutoff is 1.1 mg/dL. Human nurse misses patient lab at 1.2 mg/dL. FDA audit invalidates site data and shuts down trial.</p>
+                    <button class="btn-primary btn-full mt-3" onclick="runSolverScenario('fdaAudit')">
+                        <i class="fa-solid fa-shield-halved"></i> Test Automated Deviation Safeguard
+                    </button>
+                </div>
+
+                <div class="card glass-panel challenge-card">
+                    <div class="challenge-num">05</div>
+                    <div class="challenge-header">
+                        <i class="fa-solid fa-chart-line-down text-purple challenge-icon"></i>
+                        <h3>The "Recruitment Cliff" (80% Slow Rate)</h3>
+                    </div>
+                    <p class="challenge-desc">Target: 20 patients in 3 months. After 2.5 months, only 3 found manually. Trial deadline missed, costing millions/day.</p>
+                    <button class="btn-primary btn-full mt-3" onclick="runSolverScenario('recruitmentCliff')">
+                        <i class="fa-solid fa-rocket"></i> Simulate Accelerated Pipeline
+                    </button>
+                </div>
+            </div>
+
+            <div id="solverOutputCard" class="card glass-panel solver-output-box hidden">
+                <div class="card-header">
+                    <div class="header-title">
+                        <i class="fa-solid fa-terminal icon-accent"></i>
+                        <h3 id="solverTitle">Scenario Solution Execution Output</h3>
+                    </div>
+                    <span class="badge-ai-pill">Real-Time AI Execution</span>
+                </div>
+                <div id="solverContent" class="solver-inner-content">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 6: FHIR R4 DOSSIER EXPLORER & DATASETS -->
+        <section id="fhir-explorer" class="tab-content">
+            <div class="grid-2col spacious-grid">
+                <div class="card glass-panel">
+                    <div class="card-header">
+                        <div class="header-title">
+                            <i class="fa-solid fa-cubes-stacked icon-accent"></i>
+                            <h3>HL7 FHIR R4 Aggregated Resources</h3>
+                        </div>
+                        <span class="badge-tag">Epic + Cerner + Quest Synced</span>
+                    </div>
+
+                    <div style="background:rgba(20,184,166,0.1); border:1px solid var(--primary); padding:0.85rem; border-radius:10px; margin-bottom:1.25rem;">
+                        <h4 style="font-size:0.88rem; color:var(--primary); font-weight:700; margin-bottom:0.35rem;">
+                            <i class="fa-solid fa-download"></i> Available Project Datasets:
+                        </h4>
+                        <div class="flex-row" style="flex-wrap:wrap;">
+                            <a href="patients_clinical_dataset.csv" download class="btn-secondary btn-sm" style="text-decoration:none;">
+                                <i class="fa-solid fa-file-csv text-emerald"></i> Download Patient CSV Dataset
+                            </a>
+                            <a href="patients_fhir_dataset.json" download class="btn-secondary btn-sm" style="text-decoration:none;">
+                                <i class="fa-solid fa-file-code text-cyan"></i> Download FHIR JSON Bundle
+                            </a>
+                            <a href="clinical_trials_dataset.json" download class="btn-secondary btn-sm" style="text-decoration:none;">
+                                <i class="fa-solid fa-file-lines text-amber"></i> Download Protocols JSON
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="fhir-resource-list">
+                        <div class="fhir-res-item active" onclick="selectFhirResource('Patient')">
+                            <i class="fa-solid fa-user-vcard res-icon text-cyan"></i>
+                            <div class="res-details">
+                                <h4>Patient Resource</h4>
+                                <p>Demographics, Identifiers, DOB, Gender</p>
+                            </div>
+                            <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                        </div>
+
+                        <div class="fhir-res-item" onclick="selectFhirResource('Condition')">
+                            <i class="fa-solid fa-heart-pulse res-icon text-red"></i>
+                            <div class="res-details">
+                                <h4>Condition Resource</h4>
+                                <p>ICD-10 Diagnoses: E11.9, C50.911, C50.919, G30.9</p>
+                            </div>
+                            <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                        </div>
+
+                        <div class="fhir-res-item" onclick="selectFhirResource('Observation')">
+                            <i class="fa-solid fa-microscope res-icon text-emerald"></i>
+                            <div class="res-details">
+                                <h4>Observation Resource</h4>
+                                <p>LOINC Lab Values: HbA1c, eGFR, PD-L1 CPS, Amyloid PET</p>
+                            </div>
+                            <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                        </div>
+
+                        <div class="fhir-res-item" onclick="selectFhirResource('MedicationStatement')">
+                            <i class="fa-solid fa-pills res-icon text-amber"></i>
+                            <div class="res-details">
+                                <h4>MedicationStatement Resource</h4>
+                                <p>RxNorm Active Medications</p>
+                            </div>
+                            <i class="fa-solid fa-chevron-right arrow-icon"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card glass-panel">
+                    <div class="card-header">
+                        <div class="header-title">
+                            <i class="fa-solid fa-code icon-accent"></i>
+                            <h3>FHIR JSON Representation</h3>
+                        </div>
+                        <button class="btn-secondary btn-sm" onclick="copyFhirJson()">
+                            <i class="fa-solid fa-copy"></i> Copy JSON
+                        </button>
+                    </div>
+
+                    <div class="json-schema-output">
+                        <pre id="fhirJsonDisplay">// FHIR JSON Resource stream...</pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 7: PROTOCOL CRITERIA NLP TREE -->
+        <section id="criteria-extractor" class="tab-content">
+            <div class="grid-2col spacious-grid">
+                <div class="card glass-panel">
+                    <div class="card-header flex-between">
+                        <div class="header-title">
+                            <i class="fa-solid fa-file-circle-check icon-accent text-cyan"></i>
+                            <h3>Unstructured Trial Protocol Source</h3>
+                        </div>
+                        <span class="badge-tag text-cyan"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Parser</span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label">Protocol Identifier & Title:</label>
+                        <input type="text" id="rawProtocolTitle" class="form-control" style="font-weight:700;" value="NCT048821: Phase III SGLT2i Type 2 Diabetes Trial">
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label">Unstructured Protocol Eligibility Text:</label>
+                        <textarea id="rawProtocolText" rows="9" class="form-control pretty-protocol-textarea">Inclusion Criteria:
+1. Adult patients aged 18 to 75 years at the time of screening.
+2. Documented diagnosis of Type 2 Diabetes Mellitus with baseline HbA1c >= 7.5% and <= 10.5%.
+3. Estimated Glomerular Filtration Rate (eGFR) >= 45 mL/min/1.73m2.
+
+Exclusion Criteria:
+1. History of acute myocardial infarction, unstable angina, or stroke within 6 months prior to screening.
+2. Current diagnosis of Type 1 Diabetes Mellitus or diabetic ketoacidosis (DKA).
+3. Severe hepatic impairment (ALT/AST > 3x Upper Limit of Normal).</textarea>
+                    </div>
+
+                    <button class="btn-primary btn-full" onclick="runCriteriaExtraction()">
+                        <i class="fa-solid fa-diagram-project"></i> Re-Extract & Build Visual Logic AST Tree
+                    </button>
+                </div>
+
+                <div class="card glass-panel">
+                    <div class="card-header flex-between">
+                        <div class="header-title">
+                            <i class="fa-solid fa-diagram-nested icon-accent text-emerald"></i>
+                            <h3>Visual Criteria Logic Nodes & Machine Executable AST</h3>
+                        </div>
+                        <span class="badge-ai-pill">Zero Error AST</span>
+                    </div>
+
+                    <div class="mb-3">
+                        <h4 class="section-subheading" style="font-size:0.86rem; color:var(--text-muted); font-weight:700; margin-bottom:0.5rem;">
+                            <i class="fa-solid fa-sitemap text-cyan"></i> Visual Criteria Logic Nodes
+                        </h4>
+                        <div id="logicGraphContainer" class="pretty-logic-graph-box">
+                            <!-- Rendered cleanly by JS -->
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex-between mb-2">
+                            <h4 class="section-subheading" style="font-size:0.86rem; color:var(--text-muted); font-weight:700; margin:0;">
+                                <i class="fa-solid fa-brackets-curly text-purple"></i> Machine Executable JSON Logic Schema
+                            </h4>
+                            <button class="btn-secondary btn-sm" onclick="copySchemaJson()">
+                                <i class="fa-solid fa-copy"></i> Copy Schema
+                            </button>
+                        </div>
+                        <div class="pretty-json-box">
+                            <pre id="schemaJsonOutput">// JSON Schema output...</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 8: DOCUMENT RAG INTELLIGENCE -->
+        <section id="document-rag" class="tab-content">
+            <div class="grid-2col spacious-grid">
+                <div class="card glass-panel">
+                    <div class="card-header">
+                        <div class="header-title">
+                            <i class="fa-solid fa-book icon-accent"></i>
+                            <h3>Trial Document Vector Store</h3>
+                        </div>
+                    </div>
+
+                    <div class="doc-list">
+                        <div class="doc-item active" onclick="selectDocRepo('master')">
+                            <i class="fa-solid fa-file-pdf text-red doc-type-icon"></i>
+                            <div class="doc-info">
+                                <h4>NCT048821_Master_Protocol_v3.2.pdf</h4>
+                                <p>148 Pages • 1,240 Chunks Indexed</p>
+                            </div>
+                        </div>
+
+                        <div class="doc-item" onclick="selectDocRepo('icf')">
+                            <i class="fa-solid fa-file-signature text-amber doc-type-icon"></i>
+                            <div class="doc-info">
+                                <h4>Informed_Consent_Form_Template_v2.pdf</h4>
+                                <p>24 Pages • IRB Approved</p>
+                            </div>
+                        </div>
+
+                        <div class="doc-item" onclick="selectDocRepo('ib')">
+                            <i class="fa-solid fa-shield-halved text-cyan doc-type-icon"></i>
+                            <div class="doc-info">
+                                <h4>Investigator_Brochure_SGLT2i_2025.pdf</h4>
+                                <p>86 Pages • Pharmacokinetics & Safety</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card glass-panel chat-card">
+                    <div class="card-header">
+                        <div class="header-title">
+                            <i class="fa-solid fa-comments-question-check icon-accent"></i>
+                            <h3>Protocol RAG Assistant</h3>
+                        </div>
+                    </div>
+
+                    <div class="preset-chips">
+                        <button class="chip" onclick="askPresetQuery('washout')">What is the metformin washout period?</button>
+                        <button class="chip" onclick="askPresetQuery('dosage')">What is the drug dosing schedule?</button>
+                        <button class="chip" onclick="askPresetQuery('safety')">What are the primary immune-related adverse event (irAE) endpoints?</button>
+                    </div>
+
+                    <div id="ragChatHistory" class="chat-history">
+                        <div class="msg msg-bot">
+                            Hello! I am your AI Research Assistant. Ask any question regarding trial protocols, dosing, or safety guidelines.
+                        </div>
+                    </div>
+
+                    <div class="chat-input-row">
+                        <input type="text" id="ragQueryInput" class="form-control" placeholder="Ask a question about the protocol...">
+                        <button class="btn-primary" onclick="sendRagQuery()">
+                            <i class="fa-solid fa-paper-plane"></i> Ask
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 9: SDV & GCP COMPLIANCE -->
+        <section id="sdv-compliance" class="tab-content">
+            <div class="card glass-panel mb-4">
+                <div class="card-header flex-between">
+                    <div class="header-title">
+                        <i class="fa-solid fa-shield-halved icon-accent"></i>
+                        <h3>Source Data Verification (SDV) & GCP Audit Tracker</h3>
+                    </div>
+                    <button class="btn-secondary btn-sm" onclick="runAutomatedSdvAudit()">
+                        <i class="fa-solid fa-rotate"></i> Run Automated Audit
+                    </button>
+                </div>
+
+                <div class="grid-3col spacious-grid mb-4">
+                    <div class="metric-stat-card">
+                        <i class="fa-solid fa-clipboard-check stat-icon text-emerald"></i>
+                        <div>
+                            <h3>98.2%</h3>
+                            <p>SDV Verification Score</p>
+                        </div>
+                    </div>
+
+                    <div class="metric-stat-card">
+                        <i class="fa-solid fa-triangle-exclamation stat-icon text-amber"></i>
+                        <div>
+                            <h3>2 Alerts</h3>
+                            <p>eCRF vs EMR Discrepancies</p>
+                        </div>
+                    </div>
+
+                    <div class="metric-stat-card">
+                        <i class="fa-solid fa-file-circle-xmark stat-icon text-red"></i>
+                        <div>
+                            <h3>1 Missing</h3>
+                            <p>Required Baseline Lab</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="clean-table">
+                        <thead>
+                            <tr>
+                                <th>Subject ID</th>
+                                <th>Site / Center</th>
+                                <th>Consent (ICF)</th>
+                                <th>eCRF vs EMR Verification</th>
+                                <th>Missing Labs</th>
+                                <th>Protocol Deviation</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sdvTbody">
+                            <!-- Filled by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 10: COMMAND CENTER -->
+        <section id="trial-dashboard" class="tab-content">
+            <div class="grid-2col spacious-grid mb-4">
+                <div class="card glass-panel">
+                    <div class="card-header">
+                        <div class="header-title">
+                            <i class="fa-solid fa-filter-circle-dollar icon-accent"></i>
+                            <h3>Patient Recruitment Funnel</h3>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="recruitmentFunnelChart" height="220"></canvas>
+                    </div>
+                </div>
+
+                <div class="card glass-panel map-card">
+                    <div class="card-header flex-between">
+                        <div class="header-title">
+                            <i class="fa-solid fa-earth-americas icon-accent"></i>
+                            <h3>Geo-Spatial Trial Feasibility & Patient Density Heatmap</h3>
+                        </div>
+                        <button class="btn-secondary btn-sm" onclick="forceInitTrialMap()">
+                            <i class="fa-solid fa-rotate-right text-cyan"></i> Reload GIS Map
+                        </button>
+                    </div>
+                    <div id="trialMap" class="map-container" style="min-height: 280px; width:100%; border-radius:12px; border:1px solid var(--border-color);"></div>
+                </div>
+            </div>
+
+            <div class="grid-3col spacious-grid">
+                <div class="metric-stat-card">
+                    <i class="fa-solid fa-users-viewfinder stat-icon text-cyan"></i>
+                    <div>
+                        <h3>1,420</h3>
+                        <p>Total Patients Screened</p>
+                    </div>
+                </div>
+
+                <div class="metric-stat-card">
+                    <i class="fa-solid fa-user-check stat-icon text-emerald"></i>
+                    <div>
+                        <h3>318</h3>
+                        <p>Eligible Candidates Matched</p>
+                    </div>
+                </div>
+
+                <div class="metric-stat-card">
+                    <i class="fa-solid fa-stopwatch stat-icon text-purple"></i>
+                    <div>
+                        <h3>4.2 Days</h3>
+                        <p>Avg Screening Duration</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal: AI Hallucination & Discrepancy Verification Modal -->
+    <div id="hallucinationModal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel" style="width: 720px; border:2px solid var(--amber);">
+            <div class="modal-header flex-between pb-2 mb-2">
+                <h3 style="color:#B45309;"><i class="fa-solid fa-shield-halved text-amber"></i> AI Anti-Hallucination Source Grounding Verification</h3>
+                <button class="icon-btn" onclick="toggleHallucinationLogModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div style="background:rgba(245,158,11,0.1); border:1px solid var(--amber); padding:1rem; border-radius:10px; margin-bottom:1rem;">
+                    <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">4-TIER SAFEGUARD STATUS</div>
+                    <strong style="font-size:1.05rem; color:#B45309;"><i class="fa-solid fa-shield-halved"></i> SOURCE GROUNDED: 99.8% Precision (Zero Uncited Extrapolations)</strong>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label class="form-label" style="font-weight:700;">Grounding & Discrepancy Safeguard Stream:</label>
+                    <div style="display:flex; flex-direction:column; gap:0.6rem; max-height:240px; overflow-y:auto;" id="hallucinationStreamList">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+
+                <div class="flex-between p-3 glass-panel" style="background:rgba(16,185,129,0.1); border-radius:8px;">
+                    <span style="font-size:0.78rem; color:var(--text-muted);"><i class="fa-solid fa-shield-halved text-emerald"></i> Audit Verification: <strong>21 CFR Part 11 Compliant</strong></span>
+                    <button class="btn-primary btn-sm" onclick="alert('Self-Consistency & Grounding Certificate Downloaded!')">
+                        <i class="fa-solid fa-download"></i> Download Audit Grounding Log
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer mt-3">
+                <button class="btn-secondary" onclick="toggleHallucinationLogModal()">Close Verification</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Log Daily Dose / Progress Entry -->
+    <div id="logDoseModal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel" style="width: 650px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-prescription-bottle-medical text-amber"></i> Log Daily Patient Dose & Governance Visit</h3>
+                <button class="icon-btn" onclick="closeLogDoseModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="logDoseForm" onsubmit="handleLogDoseSubmit(event)">
+                    <div class="grid-2col mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Dose Date & Time</label>
+                            <input type="text" id="doseLogDate" class="form-control" value="Aug 14, 2026 - 17:30" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Trial Visit / Cycle</label>
+                            <input type="text" id="doseLogCycle" class="form-control" value="Cycle 3, Day 1" required>
+                        </div>
+                    </div>
+
+                    <div class="grid-2col mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Prescribed Drug & Dose (mg)</label>
+                            <input type="text" id="doseLogDrug" class="form-control" value="Keytruda (Pembrolizumab) 200mg IV" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Administration Status</label>
+                            <select id="doseLogStatus" class="form-select">
+                                <option value="ADMINISTERED">ADMINISTERED (100% Dose Given)</option>
+                                <option value="HELD">HELD / DELAYED (Safety Pause)</option>
+                                <option value="REDUCED">DOSE REDUCED (50% Adjusted)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid-2col mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Biomarker / Lab Progress</label>
+                            <input type="text" id="doseLogLab" class="form-control" value="HbA1c: 6.9% (-1.5% decrease)" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Adverse Event / Side Effect Log</label>
+                            <input type="text" id="doseLogSideEffects" class="form-control" value="None reported (CTCAE Grade 0)">
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn-secondary" onclick="closeLogDoseModal()">Cancel</button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fa-solid fa-clock-rotate-left"></i> Save & Log Patient Progress
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Automated Consent Form Email Dispatched Alert -->
+    <div id="consentEmailModal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel" style="width: 650px; border:2px solid var(--accent);">
+            <div class="modal-header flex-between pb-2 mb-2">
+                <h3 style="color:#0F5C63;"><i class="fa-solid fa-paper-plane text-emerald"></i> Automated Patient Consent Email Dispatched!</h3>
+                <button class="icon-btn" onclick="closeConsentEmailModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div style="background:rgba(16,185,129,0.12); border:1px solid var(--accent); padding:1rem; border-radius:10px; margin-bottom:1rem;">
+                    <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">RECIPIENT PATIENT EMAIL</div>
+                    <strong id="modalRecipientEmail" style="font-size:1.05rem; color:#0F5C63;">evelyn.vance@clinicalpatient.org</strong>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label class="form-label" style="font-weight:700;">Email Subject Line:</label>
+                    <input type="text" id="modalEmailSubject" class="form-control" readonly style="background:#F5FAFC; color:var(--text-main); font-weight:700;">
+                </div>
+
+                <div class="form-group mb-3">
+                    <label class="form-label" style="font-weight:700;">Automated Email Body & Intake Form Link:</label>
+                    <textarea id="modalEmailBody" class="form-control" rows="5" readonly style="background:#F5FAFC; font-family:monospace; font-size:0.85rem; color:#14b8a6;"></textarea>
+                </div>
+
+                <div class="flex-between p-3 glass-panel" style="background:rgba(20,184,166,0.1); border-radius:8px;">
+                    <span style="font-size:0.78rem; color:var(--text-muted);"><i class="fa-solid fa-shield-halved text-cyan"></i> Delivery Status: <strong>SENT (100% HIPAA Encrypted)</strong></span>
+                    <a id="modalOpenIntakeLink" href="#" target="_blank" class="btn-primary btn-sm" style="text-decoration:none;">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Open Patient Intake Form
+                    </a>
+                </div>
+            </div>
+            <div class="modal-footer mt-3">
+                <button class="btn-secondary" onclick="closeConsentEmailModal()">Close Alert</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Register New Custom Patient Record -->
+    <div id="addNewPatientModal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel" style="width: 650px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-user-plus text-cyan"></i> Register New Patient Candidate Record</h3>
+                <button class="icon-btn" onclick="closeAddNewPatientModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="addNewPatientForm" onsubmit="handleAddNewPatientSubmit(event)">
+                    <div class="grid-2col mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Patient Full Name</label>
+                            <input type="text" id="newPtName" class="form-control" placeholder="e.g. Dr. Jonathan Reed" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Age & Gender</label>
+                            <div class="flex-row">
+                                <input type="number" id="newPtAge" class="form-control" value="58" required style="width:48%;">
+                                <select id="newPtGender" class="form-select" style="width:48%;">
+                                    <option value="Female">Female</option>
+                                    <option value="Male">Male</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-2col mb-3">
+                        <div class="form-group">
+                            <label class="form-label">HbA1c Level (%)</label>
+                            <input type="number" step="0.1" id="newPtHba1c" class="form-control" value="8.4" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">eGFR (mL/min/1.73m²)</label>
+                            <input type="number" id="newPtEgfr" class="form-control" value="68" required>
+                        </div>
+                    </div>
+
+                    <div class="grid-2col mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Primary Diagnosis (ICD-10 Code)</label>
+                            <select id="newPtDiag" class="form-select">
+                                <option value="T2D">Type 2 Diabetes Mellitus (ICD-10: E11.9)</option>
+                                <option value="NSCLC">NSCLC EGFR Exon 19 Deletion (ICD-10: C34.90)</option>
+                                <option value="TNBC">Triple-Negative Breast Cancer - Keytruda (ICD-10: C50.919)</option>
+                                <option value="HER2">HER2+ Metastatic Breast Cancer (ICD-10: C50.911)</option>
+                                <option value="AD">Early Alzheimer's Disease - Donanemab (ICD-10: G30.9)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Stroke History</label>
+                            <select id="newPtStroke" class="form-select">
+                                <option value="999">No History of Stroke</option>
+                                <option value="3">Stroke 3 months ago (Exclusion)</option>
+                                <option value="12">Stroke 12 months ago</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label class="form-label">Active Prescriptions / Medications</label>
+                        <input type="text" id="newPtMeds" class="form-control" value="Metformin 1000mg BID, Atorvastatin 20mg">
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn-secondary" onclick="closeAddNewPatientModal()">Cancel</button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fa-solid fa-user-check"></i> Register Patient & Screen Batch
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register New Pharma Sponsor Trial Modal -->
+    <div id="addPharmaTrialModal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel" style="width: 650px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-building-circle-check text-purple"></i> Register New Pharma Sponsor Trial Protocol</h3>
+                <button class="icon-btn" onclick="closeAddPharmaTrialModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="addPharmaTrialForm" onsubmit="handleRegisterPharmaTrial(event)">
+                    <div class="grid-2col mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Pharma Sponsor Company</label>
+                            <input type="text" id="newPharmaCompany" class="form-control" value="AstraZeneca PLC" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Investigational Molecule / Drug</label>
+                            <input type="text" id="newPharmaDrug" class="form-control" value="Durvalumab (Imfinzi)" required>
+                        </div>
+                    </div>
+
+                    <div class="grid-2col mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Target Disease Indication</label>
+                            <input type="text" id="newPharmaIndication" class="form-control" value="Small Cell Lung Cancer (SCLC)" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Trial Phase & Protocol NCT</label>
+                            <input type="text" id="newPharmaNct" class="form-control" value="Phase III (NCT099120)" required>
+                        </div>
+                    </div>
+
+                    <div class="grid-2col mb-3">
+                        <div class="form-group">
+                            <label class="form-label">Target Recruitment Goal</label>
+                            <input type="number" id="newPharmaTarget" class="form-control" value="450" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Trial Site Budget ($ USD)</label>
+                            <input type="text" id="newPharmaBudget" class="form-control" value="$12.5M" required>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn-secondary" onclick="closeAddPharmaTrialModal()">Cancel</button>
+                        <button type="submit" class="btn-primary">
+                            <i class="fa-solid fa-building-flag"></i> Register Sponsor Trial
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Explainable AI (XAI) Modal -->
+    <div id="xaiModal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel" style="width: 720px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-magnifying-glass-doc text-cyan"></i> Explainable AI (XAI) Source Verification</h3>
+                <button class="icon-btn" onclick="closeXaiModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <div style="background:rgba(20,184,166,0.1); border:1px solid var(--primary); padding:1rem; border-radius:12px; margin-bottom:1rem;">
+                    <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700;">VERIFIED PROTOCOL RULE</div>
+                    <h4 id="xaiRuleTitle" style="color:var(--text-main); font-size:1.05rem; font-weight:800; margin-top:0.25rem;">Rule: HbA1c Bound (7.5% - 10.5%)</h4>
+                </div>
+
+                <div style="margin-bottom:1rem;">
+                    <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700; margin-bottom:0.4rem;">ORIGINAL UNSTRUCTURED EMR SOURCE SNIPPET</div>
+                    <div id="xaiSourceSnippet" class="solver-highlight-box" style="margin-top:0; font-size:0.9rem; line-height:1.6;">
+                        <!-- Highlighted EMR text -->
+                    </div>
+                </div>
+
+                <div class="grid-2col mb-3">
+                    <div style="background:#F5FAFC; border:1px solid var(--border-color); padding:0.85rem; border-radius:8px;">
+                        <span style="font-size:0.75rem; color:var(--text-muted);">SOURCE SYSTEM</span><br>
+                        <strong id="xaiSourceSystem" style="color:var(--primary);">Epic EHR Lab Portal (LOINC 4548-4)</strong>
+                    </div>
+                    <div style="background:#F5FAFC; border:1px solid var(--border-color); padding:0.85rem; border-radius:8px;">
+                        <span style="font-size:0.75rem; color:var(--text-muted);">TIMESTAMP & AUDIT HASH</span><br>
+                        <strong id="xaiTimestamp" style="color:#0F5C63;">Oct 15, 2025 (SHA256: e8f9...4a2b)</strong>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn-secondary" onclick="closeXaiModal()">Close Verification</button>
+                    <button class="btn-primary" onclick="alert('XAI Verification PDF Certificate downloaded for IRB Audit!')">
+                        <i class="fa-solid fa-file-certificate"></i> Export Audit Certificate
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Synthetic Patient Generator Modal -->
+        <div id="syntheticModal" class="modal-overlay hidden">
+            <div class="modal-content glass-panel">
+                <div class="modal-header">
+                    <h3><i class="fa-solid fa-user-plus"></i> Generate Custom Patient Record</h3>
+                    <button class="icon-btn" onclick="closeSyntheticPatientModal()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="modal-body">
+                    <form id="syntheticForm" onsubmit="handleCreateSyntheticPatient(event)">
+                        <div class="grid-2col mb-3">
+                            <div class="form-group">
+                                <label class="form-label">Patient Full Name</label>
+                                <input type="text" id="synthName" class="form-control" placeholder="e.g. Dr. Aris Thorne" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Age & Gender</label>
+                                <div class="flex-row">
+                                    <input type="number" id="synthAge" class="form-control" value="65" required style="width:48%;">
+                                    <select id="synthGender" class="form-select" style="width:48%;">
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid-2col mb-3">
+                            <div class="form-group">
+                                <label class="form-label">HbA1c Level (%)</label>
+                                <input type="number" step="0.1" id="synthHba1c" class="form-control" value="8.5" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">eGFR (mL/min/1.73m²)</label>
+                                <input type="number" id="synthEgfr" class="form-control" value="62" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="form-label">Primary Diagnosis / ICD-10</label>
+                            <input type="text" id="synthDiagnosis" class="form-control" value="Type 2 Diabetes Mellitus (ICD-10: E11.9)" required>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label class="form-label">Recent Ischemic Stroke History?</label>
+                            <select id="synthStroke" class="form-select">
+                                <option value="999">No History of Stroke</option>
+                                <option value="3">Stroke 3 months ago (Triggers Exclusion)</option>
+                                <option value="12">Stroke 12 months ago</option>
+                            </select>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn-secondary" onclick="closeSyntheticPatientModal()">Cancel</button>
+                            <button type="submit" class="btn-primary">
+                                <i class="fa-solid fa-dna"></i> Register Patient & Run Evaluation
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informed Consent Modal -->
+        <div id="recruitModal" class="modal-overlay hidden">
+            <div class="modal-content glass-panel">
+                <div class="modal-header">
+                    <h3><i class="fa-solid fa-file-signature"></i> Initiate Patient Screening Protocol</h3>
+                    <button class="icon-btn" onclick="closeRecruitModal()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="modal-body">
+                    <p>Initiating trial screening workflow and digital informed consent dispatch.</p>
+                    <div class="form-group mt-3">
+                        <label class="form-label">Investigator Clinical Note:</label>
+                        <textarea class="form-control" rows="3">Patient satisfies all inclusion criteria. Baseline blood panel scheduled.</textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn-secondary" onclick="closeRecruitModal()">Cancel</button>
+                        <button class="btn-primary" onclick="confirmRecruitment()">
+                            <i class="fa-solid fa-paper-plane"></i> Dispatch Informed Consent
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DRUG CLINICAL TESTING & PERFORMANCE ANALYTICS MODAL -->
+        <div id="drugPerformanceModal" class="modal-overlay hidden">
+            <div class="modal-content glass-panel" style="width: 820px; max-width: 95vw;">
+                <div class="modal-header">
+                    <div>
+                        <span class="badge-tag text-purple mb-1" id="perfSponsorBadge">Merck & Co.</span>
+                        <h3 id="perfDrugTitle" style="font-size: 1.3rem; font-weight: 900; color: #0F5C63;">
+                            <i class="fa-solid fa-flask-vial"></i> Keytruda (Pembrolizumab) 200mg IV
+                        </h3>
+                    </div>
+                    <button class="icon-btn" onclick="closeDrugPerformanceModal()"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <div class="modal-body" style="max-height: 80vh; overflow-y: auto; padding-right: 0.5rem;">
+                    
+                    <!-- TOP TESTING STATUS CARD -->
+                    <div style="background: #DDF5F0; border: 1px solid var(--purple); padding: 1.25rem; border-radius: 14px; margin-bottom: 1.25rem;">
+                        <div class="flex-between mb-2">
+                            <div>
+                                <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">CLINICAL TESTING STAGE</span>
+                                <h4 id="perfPhaseText" style="color: #163A43; font-size: 1.1rem; font-weight: 800; margin-top: 0.2rem;">Phase III Active Trial Testing</h4>
+                            </div>
+                            <span id="perfProgressBadge" class="badge-tag text-emerald" style="font-size: 0.9rem; font-weight: 800; padding: 0.4rem 0.85rem;">
+                                78% COMPLETED
+                            </span>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div style="background:#F5FAFC; height: 12px; border-radius: 20px; overflow: hidden; margin-bottom: 0.85rem; border: 1px solid rgba(255,255,255,0.1);">
+                            <div id="perfProgressBar" style="width: 78%; height: 100%; background: linear-gradient(90deg, var(--purple), var(--accent)); transition: width 0.6s ease;"></div>
+                        </div>
+
+                        <div class="grid-4col" style="gap: 0.75rem; text-align: center;">
+                            <div style="background: rgba(15,23,42,0.6); padding: 0.65rem; border-radius: 8px;">
+                                <span style="font-size: 0.72rem; color: var(--text-muted);">TOTAL DOSES</span><br>
+                                <strong id="perfDoses" style="color: var(--cyan); font-size: 0.95rem;">3,840 Infusions</strong>
+                            </div>
+                            <div style="background: rgba(15,23,42,0.6); padding: 0.65rem; border-radius: 8px;">
+                                <span style="font-size: 0.72rem; color: var(--text-muted);">TESTING DURATION</span><br>
+                                <strong id="perfDays" style="color: #B45309; font-size: 0.95rem;">420 Days Active</strong>
+                            </div>
+                            <div style="background: rgba(15,23,42,0.6); padding: 0.65rem; border-radius: 8px;">
+                                <span style="font-size: 0.72rem; color: var(--text-muted);">TRIAL SITES</span><br>
+                                <strong id="perfSites" style="color: var(--primary); font-size: 0.95rem;">48 Hospitals</strong>
+                            </div>
+                            <div style="background: rgba(15,23,42,0.6); padding: 0.65rem; border-radius: 8px;">
+                                <span style="font-size: 0.72rem; color: var(--text-muted);">ENROLLED COHORT</span><br>
+                                <strong id="perfEnrolled" style="color: #0F5C63; font-size: 0.95rem;">340 / 500 Pts</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DRUG PERFORMANCE METRICS GRID -->
+                    <h4 style="font-size: 1.05rem; font-weight: 800; color: #0F5C63; margin-bottom: 0.85rem;">
+                        <i class="fa-solid fa-chart-line"></i> Drug Efficacy & Performance Analytics
+                    </h4>
+
+                    <div class="grid-2col mb-3" style="gap: 1rem;">
+                        <div style="background:#F5FAFC; border: 1px solid var(--border-glow); padding: 1rem; border-radius: 12px;">
+                            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700;">THERAPEUTIC RESPONSE RATE</span>
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 0.35rem;">
+                                <strong id="perfResponseRate" style="font-size: 1.8rem; font-weight: 900; color: #0F5C63;">88.4%</strong>
+                                <span class="badge-tag text-emerald"><i class="fa-solid fa-arrow-trend-up"></i> High Efficacy</span>
+                            </div>
+                            <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.4rem;">Statistically significant positive clinical response across active trial patients.</p>
+                        </div>
+
+                        <div style="background:#F5FAFC; border: 1px solid var(--border-glow); padding: 1rem; border-radius: 12px;">
+                            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700;">BIOMARKER CLEARANCE RATE</span>
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 0.35rem;">
+                                <strong id="perfBiomarker" style="font-size: 1.4rem; font-weight: 900; color: var(--cyan);">-68.5% Reduction</strong>
+                                <span class="badge-tag text-cyan"><i class="fa-solid fa-dna"></i> Lab Verified</span>
+                            </div>
+                            <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.4rem;">Quantified tumor / disease biomarker reduction following Dose 1 & 2 cycles.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid-2col mb-3" style="gap: 1rem;">
+                        <div style="background:#F5FAFC; border: 1px solid var(--border-glow); padding: 1rem; border-radius: 12px;">
+                            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700;">MEDICATION ADHERENCE RATE</span>
+                            <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 0.35rem;">
+                                <strong id="perfAdherence" style="font-size: 1.8rem; font-weight: 900; color: #B45309;">98.4%</strong>
+                                <span class="badge-tag text-amber"><i class="fa-solid fa-prescription-bottle-medical"></i> Optimal Compliance</span>
+                            </div>
+                            <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.4rem;">Verified on-schedule dose administrations via hospital smart bottle & infusion logs.</p>
+                        </div>
+
+                        <div style="background:#F5FAFC; border: 1px solid var(--border-glow); padding: 1rem; border-radius: 12px;">
+                            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700;">SAFETY & TOXICITY PROFILE</span>
+                            <div style="font-size: 0.95rem; font-weight: 800; color: var(--emerald); margin-top: 0.35rem;" id="perfSafety">
+                                0 Serious Adverse Events (SAEs)
+                            </div>
+                            <p style="font-size: 0.78rem; color: var(--text-muted); margin-top: 0.4rem;">High tolerability profile with zero drug-related trial discontinuations.</p>
+                        </div>
+                    </div>
+
+                    <!-- KEY CLINICAL TRIAL FINDING BOX -->
+                    <div class="solver-highlight-box" style="border-left-color: #0F5C63; margin-top: 0;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; margin-bottom: 0.25rem;">
+                            <i class="fa-solid fa-microscope text-cyan"></i> KEY CLINICAL TRIAL EFFICACY SUMMARY
+                        </div>
+                        <p id="perfKeyFinding" style="font-size: 0.9rem; line-height: 1.5; color: #163A43;">
+                            Keytruda 200mg IV Q3W demonstrated statistically significant tumor clearance in Phase III cohort with zero high-grade immune adverse events.
+                        </p>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn-secondary" onclick="closeDrugPerformanceModal()">Close Performance Report</button>
+                    <button class="btn-primary" onclick="proceedToScreeningFromModal()" style="background: var(--purple); border-color: #6D28D9;">
+                        <i class="fa-solid fa-play"></i> Screen Candidates for this Drug
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    <!-- INTER-DOSE FEEDBACK DETAILED MODAL (VIEW BRIEFLY) -->
+    <div id="interDoseFeedbackModal" class="modal-overlay hidden" style="z-index: 100050;">
+        <div class="glass-panel modal-card" style="max-width: 680px; padding: 2rem; border: 2px solid var(--amber);">
+            <div class="flex-between mb-3 pb-2" style="border-bottom: 1px solid rgba(245,158,11,0.2);">
+                <div>
+                    <span class="badge-tag text-amber mb-1"><i class="fa-solid fa-vial-circle-check"></i> Post-Dose Inter-Dose Clinical Dossier</span>
+                    <h3 id="feedbackModalTitle" style="font-size: 1.3rem; font-weight: 900; color: #163A43;">
+                        Keytruda 200mg IV (NCT071204) - Post-Dose Feedback
+                    </h3>
+                </div>
+                <button type="button" class="icon-btn" onclick="closeInterDoseFeedbackModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="mb-3">
+                <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">1. CLINICAL IMPACT & BIOMARKER RESPONSE</div>
+                <div id="feedbackModalImpact" style="font-size: 1.05rem; font-weight: 800; color: #0F5C63; margin-top: 0.25rem;">
+                    Biomarker Response: -14.3% Tumor Size Reduction
+                </div>
+            </div>
+
+            <div class="mb-3" style="background:#F5FAFC; padding: 1rem; border-radius: 12px; border: 1px solid var(--amber);">
+                <div style="font-size: 0.75rem; color: #B45309; font-weight: 800; text-transform: uppercase;"><i class="fa-solid fa-wand-magic-sparkles"></i> 2. R&D AI IMPROVEMENT SUGGESTION FOR DOSE 2</div>
+                <p id="feedbackModalSuggestion" style="font-size: 0.92rem; color: #163A43; font-weight: 700; margin-top: 0.35rem;">
+                    Pre-medicate with Antihistamine 30 min prior to Dose 2 to eliminate Grade 1 fatigue.
+                </p>
+            </div>
+
+            <div class="grid-2col mb-3" style="gap: 1rem;">
+                <div style="background:#F5FAFC; padding: 0.85rem; border-radius: 10px; border: 1px solid var(--border-glow);">
+                    <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">ORGAN SAFETY & TOLERABILITY</span>
+                    <div id="feedbackModalSafety" style="font-size: 0.9rem; font-weight: 800; color: var(--emerald); margin-top: 0.25rem;">
+                        eGFR: 78 mL/min | LFTs Normal | Grade 0 SAEs
+                    </div>
+                </div>
+                <div style="background:#F5FAFC; padding: 0.85rem; border-radius: 10px; border: 1px solid var(--border-glow);">
+                    <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">DOCTOR TRANSMISSION AUDIT LOG</span>
+                    <div id="feedbackModalDoctor" style="font-size: 0.9rem; font-weight: 800; color: var(--cyan); margin-top: 0.25rem;">
+                        Dr. Aris Thorne, MD (GCP Certified)
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-row justify-end mt-4">
+                <button type="button" class="btn-secondary" onclick="closeInterDoseFeedbackModal()">Close Report</button>
+                <button type="button" class="btn-primary" onclick="openDosingDashboardForActiveModal()" style="background: var(--amber); border-color: #B45309; color: #000; font-weight: 900;">
+                    <i class="fa-solid fa-prescription-bottle-medical"></i> Open Full Dosing Dashboard
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
+
+
+    <!-- AI CLINICAL COPILOT BOT — hidden until role login -->
+    <script>
+    (function() {
+        var MAX_Z = 2147483647;
+
+        /* ── MODAL ── */
+        var modal = document.createElement('div');
+        modal.id = 'aiClinicalChatbotModal';
+        modal.style.cssText = 'display:none;position:fixed;bottom:85px;right:25px;z-index:'+MAX_Z+';width:430px;height:570px;flex-direction:column;background:#FFFFFF;border:2px solid #0F5C63;box-shadow:0 12px 40px rgba(15,92,99,0.25);border-radius:16px;overflow:hidden;backdrop-filter:blur(20px);font-family:inherit;';
+        modal.innerHTML =
+            '<div style="background:#0F5C63;padding:0.85rem 1.15rem;border-bottom:1px solid #159A9C;display:flex;justify-content:space-between;align-items:center;">' +
+            '  <div style="display:flex;align-items:center;gap:0.65rem;">' +
+            '    <div style="background:#159A9C;color:#163A43;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;">&#129302;</div>' +
+            '    <div><h4 id="aiChatbotRoleTitle" style="font-size:0.95rem;font-weight:900;color:#FFFFFF;margin:0;">CuraMatch AI Clinical Copilot</h4>' +
+            '    <span style="font-size:0.72rem;color:#0F5C63;font-weight:700;">&#9679; 21 CFR Part 11 Verified</span></div>' +
+            '  </div>' +
+            '  <button onclick="document.getElementById(\'aiClinicalChatbotModal\').style.display=\'none\';" style="background:none;border:none;color:#0F5C63;cursor:pointer;font-size:1.5rem;line-height:1;padding:0;">&times;</button>' +
+            '</div>' +
+            '<div id="aiChatbotMessagesList" style="flex:1;padding:1rem;overflow-y:auto;display:flex;flex-direction:column;gap:0.85rem;background:#F5FAFC;">' +
+            '  <div id="aiChatbotGreeting" style="background:#FFFFFF;border:1px solid rgba(15,92,99,0.15);padding:0.85rem;border-radius:12px;font-size:0.85rem;color:#163A43;">&#128075; Hello! I am your <strong>CuraMatch AI Clinical Copilot</strong>. Ask me about protocol rules, patient eligibility, or drug performance!</div>' +
+            '  <div id="aiChatbotPresetChips" style="display:flex;flex-direction:column;gap:0.4rem;">' +
+            '    <div style="font-size:0.72rem;color:#0F5C63;font-weight:800;text-transform:uppercase;">Quick Questions:</div>' +
+            '    <button onclick="document.getElementById(\'aiChatbotInput\').value=\'Why is PT-10201 eligible for Keytruda?\';sendCopilotMessage();" style="text-align:left;font-size:0.78rem;padding:0.4rem 0.75rem;border-radius:8px;background:#DDF5F0;border:1px solid #159A9C;color:#0F5C63;font-weight:700;cursor:pointer;">&#128269; Why is PT-10201 eligible for Keytruda?</button>' +
+            '    <button onclick="document.getElementById(\'aiChatbotInput\').value=\'What is the eGFR cutoff for Jardiance?\';sendCopilotMessage();" style="text-align:left;font-size:0.78rem;padding:0.4rem 0.75rem;border-radius:8px;background:#DDF5F0;border:1px solid #159A9C;color:#0F5C63;font-weight:700;cursor:pointer;">&#128202; What is the eGFR cutoff for Jardiance?</button>' +
+            '    <button onclick="document.getElementById(\'aiChatbotInput\').value=\'Show Merck Keytruda grant budget\';sendCopilotMessage();" style="text-align:left;font-size:0.78rem;padding:0.4rem 0.75rem;border-radius:8px;background:#DDF5F0;border:1px solid #159A9C;color:#0F5C63;font-weight:700;cursor:pointer;">&#128200; Show Merck Keytruda grant budget</button>' +
+            '  </div>' +
+            '</div>' +
+            '<div style="padding:0.85rem;background:#FFFFFF;border-top:1px solid rgba(15,92,99,0.15);display:flex;gap:0.5rem;">' +
+            '  <input type="text" id="aiChatbotInput" placeholder="Ask AI Copilot any clinical doubt..." onkeydown="if(event.key===\'Enter\')sendCopilotMessage();" style="flex:1;background:#F5FAFC;border:1px solid rgba(15,92,99,0.2);color:#163A43;padding:0.5rem 0.85rem;border-radius:8px;font-size:0.85rem;outline:none;">' +
+            '  <button onclick="sendCopilotMessage();" style="background:linear-gradient(135deg,#0F5C63,#159A9C);color:#163A43;border:none;padding:0.5rem 0.95rem;border-radius:8px;cursor:pointer;font-weight:900;font-size:1rem;">&#10148;</button>' +
+            '</div>';
+
+        /* ── LAUNCHER ── */
+        var launcher = document.createElement('div');
+        launcher.id = 'aiClinicalChatbotLauncher';
+        launcher.style.cssText = 'position:fixed;bottom:25px;right:25px;z-index:'+MAX_Z+';background:linear-gradient(135deg,#0F5C63,#159A9C);color:#163A43;padding:0.85rem 1.4rem;border-radius:50px;box-shadow:0 8px 24px rgba(15,92,99,0.3);cursor:pointer;display:none;align-items:center;gap:0.75rem;border:2px solid #159A9C;font-weight:800;font-size:0.95rem;user-select:none;';
+        launcher.innerHTML = '&#129302; <span id="aiChatbotLauncherLabel">AI Clinical Copilot</span> <span style="background:rgba(221,245,240,0.3);color:#0F5C63;font-size:0.7rem;padding:0.15rem 0.5rem;border-radius:12px;font-weight:800;">LIVE XAI</span>';
+        launcher.onclick = function() {
+            var m = document.getElementById('aiClinicalChatbotModal');
+            if (!m) return;
+            if (m.style.display === 'flex') {
+                m.style.display = 'none';
+            } else {
+                m.style.display = 'flex';
+                m.style.flexDirection = 'column';
+                if (typeof updateCopilotChatbotForRole === 'function') updateCopilotChatbotForRole();
+            }
+        };
+
+        document.body.appendChild(modal);
+        document.body.appendChild(launcher);
+
+        /* Called by each login role button to reveal the bot */
+        window.showAiBot = function() {
+            launcher.style.display = 'flex';
+            launcher.style.alignItems = 'center';
+            if (typeof updateCopilotChatbotForRole === 'function') updateCopilotChatbotForRole();
+        };
+    })();
+    </script>
+</body>
+</html>

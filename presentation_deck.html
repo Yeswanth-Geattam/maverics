@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CuraMatch PRO - Pitch Deck</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- html2pdf.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        :root {
+            --bg-dark: #0A0F1C;
+            --card-bg: rgba(15, 23, 42, 0.7);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --teal-grad-start: #0F5C63;
+            --teal-grad-end: #159A9C;
+            --cyan: #38BDF8;
+            --emerald: #10B981;
+            --red: #EF4444;
+            --amber: #F59E0B;
+            --purple: #8B5CF6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow: hidden; /* Prevent scrolling during presentation */
+            width: 100vw;
+            height: 100vh;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Animated Background */
+        .bg-animated {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: radial-gradient(circle at 15% 50%, rgba(15, 92, 99, 0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 85% 30%, rgba(56, 189, 248, 0.1) 0%, transparent 50%);
+            animation: bgPulse 15s ease-in-out infinite alternate;
+        }
+        
+        .bg-orbs {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle at center, rgba(56, 189, 248, 0.2), transparent 70%);
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes bgPulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.1); opacity: 1; }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) translateX(0); opacity: 0; }
+            20% { opacity: 0.5; }
+            80% { opacity: 0.5; }
+            100% { transform: translateY(-20vh) translateX(100px); opacity: 0; }
+        }
+
+        /* Top Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: linear-gradient(to bottom, rgba(10, 15, 28, 0.9) 0%, transparent 100%);
+        }
+
+        .logo {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: white;
+        }
+
+        .logo i {
+            color: var(--cyan);
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .btn-nav {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-nav:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .btn-nav.primary {
+            background: linear-gradient(135deg, var(--teal-grad-start), var(--teal-grad-end));
+            border: none;
+        }
+
+        .slide-counter {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 0.5rem 1.25rem;
+            border-radius: 20px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Progress Bar */
+        .progress-bar-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            z-index: 101;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--cyan), var(--emerald));
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        /* Presentation Container */
+        #presentation-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 6rem 4rem 4rem;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.95) translateY(20px);
+            transition: all 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1) translateY(0);
+        }
+
+        /* Bottom Dots */
+        .dots-container {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.75rem;
+            z-index: 100;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: var(--cyan);
+            box-shadow: 0 0 10px var(--cyan);
+            transform: scale(1.2);
+        }
+        
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+            border-color: rgba(255,255,255,0.15);
+        }
+
+        /* Typography & Gradients */
+        .text-gradient {
+            background: linear-gradient(to right, var(--cyan), var(--emerald));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .title-large {
+            font-size: 4.5rem;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+        }
+        
+        .title-slide {
+            font-size: 3rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        /* Animations */
+        .stagger-1 { transition-delay: 0.1s; }
+        .stagger-2 { transition-delay: 0.2s; }
+        .stagger-3 { transition-delay: 0.3s; }
+        .stagger-4 { transition-delay: 0.4s; }
+        
+        .slide.active .animate-in {
+            animation: fadeInUp 0.8s forwards;
+            opacity: 0;
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(56, 189, 248, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(56, 189, 248, 0); }
+        }
+
+        /* Slide Specific Layouts */
+        .center-flex {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            text-align: center;
+        }
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+        .grid-3x2 { display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: 1.5rem; height: 70%; }
+        
+        .content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Elements */
+        .icon-lg {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: -webkit-linear-gradient(var(--cyan), var(--emerald));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stat-pill {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 0.75rem 1.5rem;
+            border-radius: 30px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .badge {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--cyan);
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--cyan), var(--teal-grad-end));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+        
+        .accent-red { border-top: 4px solid var(--red); }
+        .accent-amber { border-top: 4px solid var(--amber); }
+        .accent-teal { border-top: 4px solid var(--teal-grad-end); }
+        .accent-cyan { border-top: 4px solid var(--cyan); }
+        .accent-purple { border-top: 4px solid var(--purple); }
+        
+        .stat-number {
+            font-size: 4rem;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #F8FAFC, #94A3B8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Architecture Diagram */
+        .arch-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            align-items: center;
+            padding: 2rem;
+            height: 100%;
+        }
+        
+        .arch-row {
+            display: flex;
+            gap: 1.5rem;
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .arch-box {
+            padding: 1.5rem;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+        
+        .arch-center {
+            background: linear-gradient(135deg, rgba(15,92,99,0.3), rgba(56,189,248,0.2));
+            border: 1px solid var(--cyan);
+            padding: 2rem;
+            width: 80%;
+            animation: pulseGlow 3s infinite;
+        }
+
+        /* PDF Export Styles */
+        body.pdf-export {
+            overflow: visible !important;
+            height: auto !important;
+            background: var(--bg-dark) !important;
+        }
+
+        body.pdf-export .bg-orbs,
+        body.pdf-export .bg-animated,
+        body.pdf-export .navbar,
+        body.pdf-export .dots-container,
+        body.pdf-export .progress-bar-container {
+            display: none !important;
+        }
+
+        body.pdf-export #presentation-container {
+            height: auto !important;
+            display: block !important;
+        }
+
+        body.pdf-export .slide {
+            position: relative !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: none !important;
+            height: 793px !important; /* A4 Landscape aspect approx */
+            width: 1122px !important;
+            page-break-after: always;
+            overflow: hidden;
+            background: var(--bg-dark);
+            margin: 0;
+            padding: 4rem;
+        }
+
+        body.pdf-export .slide .animate-in {
+            animation: none !important;
+            opacity: 1 !important;
+            transform: none !important;
+        }
+        
+        body.pdf-export .arch-center {
+            animation: none !important;
+        }
+
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 0;
+            }
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-animated"></div>
+    <div class="bg-orbs" id="orbs"></div>
+    
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <nav class="navbar">
+        <a href="index.html" class="logo">
+            <i class="fa-solid fa-dna"></i> CuraMatch PRO
+        </a>
+        <div class="nav-controls">
+            <div class="slide-counter"><span id="current-slide">1</span> / 12</div>
+            <button class="btn-nav" onclick="prevSlide()" title="Previous (Left Arrow)"><i class="fa-solid fa-chevron-left"></i></button>
+            <button class="btn-nav" onclick="nextSlide()" title="Next (Right Arrow)"><i class="fa-solid fa-chevron-right"></i></button>
+            <button class="btn-nav" onclick="toggleFullscreen()" title="Fullscreen (F)"><i class="fa-solid fa-expand"></i></button>
+            <button class="btn-nav primary" onclick="generatePDF()"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
+        </div>
+    </nav>
+
+    <div id="presentation-container">
+        
+        <!-- Slide 1: TITLE -->
+        <div class="slide active">
+            <div class="center-flex">
+                <div class="animate-in" style="font-size: 6rem; color: var(--cyan); margin-bottom: 1.5rem; text-shadow: 0 0 30px rgba(56,189,248,0.5);">
+                    <i class="fa-solid fa-dna fa-spin" style="animation-duration: 10s;"></i>
+                </div>
+                <h1 class="title-large animate-in stagger-1">CuraMatch <span class="text-gradient">PRO</span></h1>
+                <p class="animate-in stagger-2" style="font-size: 1.5rem; color: var(--text-muted); margin-bottom: 3rem; max-width: 800px;">
+                    Next-Generation AI Clinical Trial Copilot & Patient Screening Engine
+                </p>
+                <div class="animate-in stagger-3" style="display: flex; gap: 1.5rem; margin-bottom: 4rem;">
+                    <div class="stat-pill"><i class="fa-solid fa-bolt text-gradient"></i> 80% Faster Recruitment</div>
+                    <div class="stat-pill"><i class="fa-solid fa-shield-halved text-gradient"></i> Zero Hallucination</div>
+                    <div class="stat-pill"><i class="fa-solid fa-file-signature text-gradient"></i> FDA 21 CFR Part 11</div>
+                </div>
+                <div class="animate-in stagger-4" style="color: rgba(255,255,255,0.3); font-weight: 500;">
+                    Hexaware Hackathon 2026
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: THE PROBLEM -->
+        <div class="slide">
+            <h2 class="title-slide animate-in">The $2.6B Clinical Trial Crisis</h2>
+            <div class="content-area">
+                <div class="grid-2">
+                    <div class="glass-card accent-red animate-in stagger-1">
+                        <i class="fa-regular fa-clock icon-lg" style="color: var(--red); -webkit-text-fill-color: var(--red);"></i>
+                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">80% Miss Deadlines</h3>
+                        <p style="color: var(--text-muted);">Manual review of 200+ page EMRs per patient takes hours. Sites struggle to find eligible candidates, delaying life-saving drugs.</p>
+                    </div>
+                    <div class="glass-card accent-amber animate-in stagger-2">
+                        <i class="fa-solid fa-robot icon-lg" style="color: var(--amber); -webkit-text-fill-color: var(--amber);"></i>
+                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">AI Hallucination Risk</h3>
+                        <p style="color: var(--text-muted);">Standard LLMs fabricate lab values (eGFR, HbA1c) or miss critical exclusion criteria, leading to dangerous false positives in screening.</p>
+                    </div>
+                    <div class="glass-card accent-amber animate-in stagger-3">
+                        <i class="fa-solid fa-link-slash icon-lg" style="color: var(--amber); -webkit-text-fill-color: var(--amber);"></i>
+                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Pharma-Doctor Disconnect</h3>
+                        <p style="color: var(--text-muted);">No real-time telemetry or post-dose feedback loop between clinical sites and R&D sponsors during the trial execution phase.</p>
+                    </div>
+                    <div class="glass-card accent-red animate-in stagger-4">
+                        <i class="fa-solid fa-shield-virus icon-lg" style="color: var(--red); -webkit-text-fill-color: var(--red);"></i>
+                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Regulatory Gaps</h3>
+                        <p style="color: var(--text-muted);">Consumer AI tools lack FDA 21 CFR Part 11 compliant audit trails, SHA-256 logging, and dynamic HIPAA PHI masking capabilities.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: THE SOLUTION -->
+        <div class="slide">
+            <h2 class="title-slide animate-in">CuraMatch PRO: Hybrid Neuro-Symbolic AI</h2>
+            <div class="content-area">
+                <div class="grid-3 mb-4">
+                    <div class="glass-card animate-in stagger-1">
+                        <i class="fa-solid fa-brain icon-lg"></i>
+                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Neuro-Symbolic RAG</h3>
+                        <p style="color: var(--text-muted);">Combines the semantic understanding of LLMs with deterministic mathematical boundaries and medical ontology rules to eliminate hallucinations.</p>
+                    </div>
+                    <div class="glass-card animate-in stagger-2">
+                        <i class="fa-solid fa-users-gear icon-lg"></i>
+                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">4-Role Enterprise Portals</h3>
+                        <p style="color: var(--text-muted);">Dedicated, secure workspaces for Pharma Sponsors, Clinical Researchers, Site Doctors, and Trial Administrators with tailored data views.</p>
+                    </div>
+                    <div class="glass-card animate-in stagger-3">
+                        <i class="fa-solid fa-repeat icon-lg"></i>
+                        <h3 style="font-size: 1.5rem; margin-bottom: 1rem;">Inter-Dose Governance</h3>
+                        <p style="color: var(--text-muted);">Continuous doctor-to-R&D telemetry feedback loop, ensuring patient safety and protocol adherence throughout the dosing lifecycle.</p>
+                    </div>
+                </div>
+                <div class="glass-card animate-in stagger-4" style="margin-top: 2rem; background: linear-gradient(90deg, rgba(15,92,99,0.3), rgba(56,189,248,0.1)); text-align: center; padding: 1.5rem;">
+                    <h3 style="font-size: 1.5rem;"><i class="fa-solid fa-arrows-turn-right"></i> End-to-End: OCR Scanning &rarr; AI Screening &rarr; Dosing &rarr; Audit</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: SYSTEM ARCHITECTURE -->
+        <div class="slide">
+            <h2 class="title-slide animate-in">Enterprise Architecture & Tech Stack</h2>
+            <div class="content-area">
+                <div class="arch-diagram animate-in stagger-1">
+                    <div class="arch-row">
+                        <div class="arch-box"><i class="fa-solid fa-building"></i> Sponsor Portal</div>
+                        <div class="arch-box"><i class="fa-solid fa-microscope"></i> Researcher Portal</div>
+                        <div class="arch-box"><i class="fa-solid fa-user-doctor"></i> Doctor Portal</div>
+                        <div class="arch-box"><i class="fa-solid fa-user-shield"></i> Admin Portal</div>
+                    </div>
+                    
+                    <div style="font-size: 1.5rem; color: var(--cyan);"><i class="fa-solid fa-arrow-down"></i></div>
+                    
+                    <div class="arch-box arch-center glass-card">
+                        <h3 style="font-size: 1.8rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-network-wired"></i> Hybrid Neuro-Symbolic AI Engine</h3>
+                        <p style="color: var(--text-muted);">Vector Search + Deterministic Rule Engine + RAG</p>
+                    </div>
+                    
+                    <div style="font-size: 1.5rem; color: var(--cyan);"><i class="fa-solid fa-arrow-down"></i></div>
+                    
+                    <div class="arch-row">
+                        <div class="arch-box" style="border-color: var(--emerald);"><i class="fa-solid fa-file-signature text-gradient"></i> FDA Audit Trail (SHA-256)</div>
+                        <div class="arch-box" style="border-color: var(--emerald);"><i class="fa-solid fa-database text-gradient"></i> Encrypted Data Layer (HIPAA)</div>
+                    </div>
+                </div>
+                <div class="animate-in stagger-2" style="display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; flex-wrap: wrap;">
+                    <span class="badge">HTML5</span>
+                    <span class="badge">CSS3</span>
+                    <span class="badge">JavaScript ES6+</span>
+                    <span class="badge">Python Fast API</span>
+                    <span class="badge">Chart.js</span>
+                    <span class="badge">Leaflet.js</span>
+                    <span class="badge">html2pdf</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: 4-TIER SAFEGUARDS -->
+        <div class="slide">
+            <h2 class="title-slide animate-in">4-Tier Zero-Hallucination Safeguard Engine</h2>
+            <div class="content-area">
+                <div class="grid-4">
+                    <div class="glass-card animate-in stagger-1">
+                        <div class="step-number">1</div>
+                        <i class="fa-solid fa-calculator icon-lg"></i>
+                        <h3 style="margin-bottom: 0.5rem;">Deterministic Math Rules</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Hard cutoffs override LLM logic. E.g., if extracted eGFR < 45, automatically flag as excluded regardless of LLM sentiment.</p>
+                    </div>
+                    <div class="glass-card animate-in stagger-2">
+                        <div class="step-number">2</div>
+                        <i class="fa-solid fa-barcode icon-lg"></i>
+                        <h3 style="margin-bottom: 0.5rem;">LOINC Code Validation</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Medical ontology regex cross-checks ensure extracted lab tests match standard LOINC codes before evaluation.</p>
+                    </div>
+                    <div class="glass-card animate-in stagger-3">
+                        <div class="step-number">3</div>
+                        <i class="fa-solid fa-file-lines icon-lg"></i>
+                        <h3 style="margin-bottom: 0.5rem;">Page-Level Citations</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Every AI decision requires a direct reference (e.g., "Page 76, Section 7.1") linking back to the source EMR document.</p>
+                    </div>
+                    <div class="glass-card animate-in stagger-4">
+                        <div class="step-number">4</div>
+                        <i class="fa-solid fa-fingerprint icon-lg"></i>
+                        <h3 style="margin-bottom: 0.5rem;">SHA-256 Crypto Hash</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">The prompt, context, AI response, and timestamp are hashed into an immutable audit trail per decision.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: ROLE-BASED WORKFLOWS -->
+        <div class="slide">
+            <h2 class="title-slide animate-in">Enterprise Role-Based Access Control</h2>
+            <div class="content-area">
+                <div class="grid-2">
+                    <div class="glass-card accent-purple animate-in stagger-1">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <i class="fa-solid fa-building icon-lg" style="margin: 0; color: var(--purple); -webkit-text-fill-color: var(--purple);"></i>
+                            <h3 style="font-size: 1.5rem;">Pharma Sponsor</h3>
+                        </div>
+                        <ul style="color: var(--text-muted); list-style-position: inside; line-height: 1.6;">
+                            <li>Global portfolio tracking across all active trials</li>
+                            <li>Drug ROI and timeline analytics dashboards</li>
+                            <li>High-level site performance metrics</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="glass-card accent-amber animate-in stagger-2">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <i class="fa-solid fa-microscope icon-lg" style="margin: 0; color: var(--amber); -webkit-text-fill-color: var(--amber);"></i>
+                            <h3 style="font-size: 1.5rem;">Clinical Researcher</h3>
+                        </div>
+                        <ul style="color: var(--text-muted); list-style-position: inside; line-height: 1.6;">
+                            <li>Protocol registration and eligibility criteria definition</li>
+                            <li>Review aggregated post-dose telemetry</li>
+                            <li>Receive AI-driven dose adjustment suggestions</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="glass-card accent-teal animate-in stagger-3">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <i class="fa-solid fa-user-doctor icon-lg" style="margin: 0;"></i>
+                            <h3 style="font-size: 1.5rem;">Site Doctor</h3>
+                        </div>
+                        <ul style="color: var(--text-muted); list-style-position: inside; line-height: 1.6;">
+                            <li>Patient intake and EMR OCR scanning</li>
+                            <li>Run 4-tier AI screening copilot</li>
+                            <li>Log post-dose reactions and adverse events</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="glass-card accent-cyan animate-in stagger-4">
+                        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                            <i class="fa-solid fa-user-shield icon-lg" style="margin: 0; color: var(--cyan); -webkit-text-fill-color: var(--cyan);"></i>
+                            <h3 style="font-size: 1.5rem;">Trial Admin</h3>
+                        </div>
+                        <ul style="color: var(--text-muted); list-style-position: inside; line-height: 1.6;">
+                            <li>Global site feasibility mapping (Leaflet.js)</li>
+                            <li>Monitor system health and token usage</li>
+                            <li>Export SHA-256 audit logs for regulatory review</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: FEATURES -->
+        <div class="slide">
+            <h2 class="title-slide animate-in">Platform Feature Highlights</h2>
+            <div class="content-area">
+                <div class="grid-3x2">
+                    <div class="glass-card center-flex animate-in stagger-1" style="padding: 1.5rem;">
+                        <i class="fa-solid fa-file-scan icon-lg"></i>
+                        <h4 style="font-size: 1.2rem;">Prescription OCR Scanner</h4>
+                    </div>
+                    <div class="glass-card center-flex animate-in stagger-2" style="padding: 1.5rem;">
+                        <i class="fa-solid fa-comments icon-lg"></i>
+                        <h4 style="font-size: 1.2rem;">AI Clinical Copilot Chatbot</h4>
+                    </div>
+                    <div class="glass-card center-flex animate-in stagger-3" style="padding: 1.5rem;">
+                        <i class="fa-solid fa-earth-americas icon-lg"></i>
+                        <h4 style="font-size: 1.2rem;">Global Site Feasibility Map</h4>
+                    </div>
+                    <div class="glass-card center-flex animate-in stagger-4" style="padding: 1.5rem;">
+                        <i class="fa-solid fa-chart-line icon-lg"></i>
+                        <h4 style="font-size: 1.2rem;">Drug Performance Dashboard</h4>
+                    </div>
+                    <div class="glass-card center-flex animate-in stagger-1" style="padding: 1.5rem;">
+                        <i class="fa-solid fa-timeline icon-lg"></i>
+                        <h4 style="font-size: 1.2rem;">Patient Dosing Timeline</h4>
+                    </div>
+                    <div class="glass-card center-flex animate-in stagger-2" style="padding: 1.5rem;">
+                        <i class="fa-solid fa-file-pdf icon-lg"></i>
+                        <h4 style="font-size: 1.2rem;">One-Click PDF Export</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: COST EFFICIENCY -->
+        <div class="slide">
+            <h2 class="title-slide animate-in">Token-Efficient Architecture & Scalability</h2>
+            <div class="content-area">
+                <div class="grid-3">
+                    <div class="glass-card center-flex animate-in stagger-1" style="padding: 3rem 2rem;">
+                        <div class="stat-number">70%+</div>
+                        <h3 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--cyan);">LLM Token Cost Reduction</h3>
+                        <p style="color: var(--text-muted);">By using deterministic rules for easy exclusions first, we only send complex semantic queries to the LLM, drastically cutting API costs.</p>
+                    </div>
+                    <div class="glass-card center-flex animate-in stagger-2" style="padding: 3rem 2rem;">
+                        <div class="stat-number">&lt; 1.1s</div>
+                        <h3 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--cyan);">Screening Latency</h3>
+                        <p style="color: var(--text-muted);">Optimized vector search and parallel processing pipelines deliver sub-second insights compared to hours of manual chart review.</p>
+                    </div>
+                    <div class="glass-card center-flex animate-in stagger-3" style="padding: 3rem 2rem;">
+                        <div class="stat-number">100K+</div>
+                        <h3 style="font-size: 1.3rem; margin-bottom: 1rem; color: var(--cyan);">Scalable Records</h3>
+                        <p style="color: var(--text-muted);">Stateless backend architecture scales horizontally to handle massive influxes of EMR data across global multi-site trials.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: REGULATORY -->
+        <div class="slide">
+            <h2 class="title-slide animate-in">FDA 21 CFR Part 11 & HIPAA Governance</h2>
+            <div class="content-area">
+                <div class="grid-2 mb-4" style="margin-bottom: 3rem;">
+                    <div class="glass-card animate-in stagger-1">
+                        <div style="display: flex; gap: 1.5rem; align-items: flex-start;">
+                            <i class="fa-solid fa-shield-halved icon-lg"></i>
+                            <div>
+                                <h3 style="font-size: 1.8rem; margin-bottom: 1rem;">HIPAA Dynamic Masking</h3>
+                                <p style="color: var(--text-muted); font-size: 1.1rem; line-height: 1.6;">One-click toggle instantly redacts PII/PHI (names, dates, SSNs, locations) from documents before processing. Ensures data privacy across the entire pipeline without altering original source files.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-card animate-in stagger-2">
+                        <div style="display: flex; gap: 1.5rem; align-items: flex-start;">
+                            <i class="fa-solid fa-signature icon-lg"></i>
+                            <div>
+                                <h3 style="font-size: 1.8rem; margin-bottom: 1rem;">FDA Part 11 Audit Trail</h3>
+                                <p style="color: var(--text-muted); font-size: 1.1rem; line-height: 1.6;">Tamper-evident logging of every system action. Electronic signatures, timestamping, and SHA-256 cryptographic hashes guarantee data integrity for regulatory submission.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="animate-in stagger-3" style="display: flex; justify-content: center; gap: 2rem;">
+                    <div class="stat-pill"><i class="fa-solid fa-check text-gradient"></i> HIPAA Compliant</div>
+                    <div class="stat-pill"><i class="fa-solid fa-check text-gradient"></i> GCP Aligned</div>
+                    <div class="stat-pill"><i class="fa-solid fa-check text-gradient"></i> 21 CFR Part 11</div>
+                    <div class="stat-pill"><i class="fa-solid fa-check text-gradient"></i> ICH-E6(R2)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: BUSINESS IMPACT -->
+        <div class="slide">
+            <h2 class="title-slide animate-in">Quantifiable Business Value & ROI</h2>
+            <div class="content-area">
+                <div class="grid-3">
+                    <div class="glass-card center-flex animate-in stagger-1" style="border: 2px solid rgba(16, 185, 129, 0.3);">
+                        <i class="fa-solid fa-sack-dollar icon-lg" style="font-size: 4rem; margin-bottom: 1.5rem;"></i>
+                        <div class="stat-number" style="font-size: 3.5rem;">$4.2M</div>
+                        <h3 style="font-size: 1.2rem; color: var(--text-muted);">Saved Per Trial Protocol</h3>
+                    </div>
+                    <div class="glass-card center-flex animate-in stagger-2" style="border: 2px solid rgba(56, 189, 248, 0.3);">
+                        <i class="fa-solid fa-stopwatch icon-lg" style="font-size: 4rem; margin-bottom: 1.5rem;"></i>
+                        <div class="stat-number" style="font-size: 3.5rem;">6 Months</div>
+                        <h3 style="font-size: 1.2rem; color: var(--text-muted);">Faster Time-to-Market</h3>
+                    </div>
+                    <div class="glass-card center-flex animate-in stagger-3" style="border: 2px solid rgba(139, 92, 246, 0.3);">
+                        <i class="fa-solid fa-magnifying-glass-chart icon-lg" style="font-size: 4rem; margin-bottom: 1.5rem;"></i>
+                        <div class="stat-number" style="font-size: 3.5rem;">0%</div>
+                        <h3 style="font-size: 1.2rem; color: var(--text-muted);">Audit Discrepancies</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: DEMO -->
+        <div class="slide">
+            <h2 class="title-slide animate-in">Live Demo Flow</h2>
+            <div class="content-area">
+                <div style="display: flex; flex-direction: column; gap: 1rem; max-width: 800px; margin: 0 auto; width: 100%;">
+                    
+                    <div class="glass-card animate-in stagger-1" style="padding: 1.5rem; display: flex; align-items: center; gap: 1.5rem;">
+                        <div class="step-number" style="margin: 0; min-width: 40px;">1</div>
+                        <div>
+                            <h4 style="font-size: 1.2rem; color: var(--cyan);">Login as Pharma Sponsor</h4>
+                            <p style="color: var(--text-muted); font-size: 0.95rem;">View active drug portfolio and trial KPIs.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card animate-in stagger-2" style="padding: 1.5rem; display: flex; align-items: center; gap: 1.5rem;">
+                        <div class="step-number" style="margin: 0; min-width: 40px;">2</div>
+                        <div>
+                            <h4 style="font-size: 1.2rem; color: var(--emerald);">Switch to Doctor Role</h4>
+                            <p style="color: var(--text-muted); font-size: 0.95rem;">Select patient, run OCR, and execute 4-tier AI screening.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card animate-in stagger-3" style="padding: 1.5rem; display: flex; align-items: center; gap: 1.5rem;">
+                        <div class="step-number" style="margin: 0; min-width: 40px;">3</div>
+                        <div>
+                            <h4 style="font-size: 1.2rem; color: var(--amber);">Verify Zero Hallucination</h4>
+                            <p style="color: var(--text-muted); font-size: 0.95rem;">Inspect exact page citations and rule-engine overrides.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card animate-in stagger-4" style="padding: 1.5rem; display: flex; align-items: center; gap: 1.5rem;">
+                        <div class="step-number" style="margin: 0; min-width: 40px;">4</div>
+                        <div>
+                            <h4 style="font-size: 1.2rem; color: var(--purple);">Inter-Dose Feedback</h4>
+                            <p style="color: var(--text-muted); font-size: 0.95rem;">Transmit post-dose reaction telemetry back to R&D.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card animate-in stagger-4" style="padding: 1.5rem; display: flex; align-items: center; gap: 1.5rem;">
+                        <div class="step-number" style="margin: 0; min-width: 40px;">5</div>
+                        <div>
+                            <h4 style="font-size: 1.2rem; color: var(--text-main);">Admin Governance</h4>
+                            <p style="color: var(--text-muted); font-size: 0.95rem;">View global map and inspect SHA-256 tamper-proof audit logs.</p>
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: THANK YOU -->
+        <div class="slide">
+            <div class="center-flex">
+                <h1 class="title-large animate-in stagger-1" style="font-size: 5rem; margin-bottom: 0;">Thank You</h1>
+                <h2 class="animate-in stagger-2" style="font-size: 2.5rem; color: var(--cyan); margin-bottom: 2rem;">Questions & Answers</h2>
+                
+                <div class="glass-card animate-in stagger-3" style="padding: 2rem 4rem; text-align: center; margin-bottom: 3rem;">
+                    <i class="fa-solid fa-dna icon-lg" style="font-size: 4rem;"></i>
+                    <h3 style="font-size: 2rem; margin-top: 1rem;">CuraMatch <span class="text-gradient">PRO</span></h3>
+                    <p style="color: var(--text-muted); margin-top: 0.5rem;">Hexaware Hackathon 2026</p>
+                </div>
+                
+                <div class="animate-in stagger-4" style="display: flex; gap: 1.5rem;">
+                    <a href="index.html" class="btn-nav primary" style="padding: 1rem 2rem; font-size: 1.2rem; border-radius: 30px;">
+                        <i class="fa-solid fa-rocket"></i> Launch Live Demo
+                    </a>
+                    <button onclick="generatePDF()" class="btn-nav" style="padding: 1rem 2rem; font-size: 1.2rem; border-radius: 30px;">
+                        <i class="fa-solid fa-file-pdf"></i> Download PDF Deck
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="dots-container" id="dots-container"></div>
+
+    <script>
+        // Presentation Logic
+        const slides = document.querySelectorAll('.slide');
+        const dotsContainer = document.getElementById('dots-container');
+        const counterEl = document.getElementById('current-slide');
+        const progressBar = document.getElementById('progress-bar');
+        
+        let currentSlide = 0;
+        const totalSlides = slides.length;
+
+        // Generate Dots
+        for (let i = 0; i < totalSlides; i++) {
+            const dot = document.createElement('div');
+            dot.classList.add('dot');
+            if (i === 0) dot.classList.add('active');
+            dot.onclick = () => goToSlide(i);
+            dotsContainer.appendChild(dot);
+        }
+        const dots = document.querySelectorAll('.dot');
+
+        // Create Background Orbs
+        const orbsContainer = document.getElementById('orbs');
+        for (let i = 0; i < 15; i++) {
+            const orb = document.createElement('div');
+            orb.classList.add('orb');
+            
+            // Random properties
+            const size = Math.random() * 150 + 50;
+            const left = Math.random() * 100;
+            const delay = Math.random() * 20;
+            const duration = Math.random() * 10 + 15;
+            
+            orb.style.width = `${size}px`;
+            orb.style.height = `${size}px`;
+            orb.style.left = `${left}%`;
+            orb.style.animationDelay = `${delay}s`;
+            orb.style.animationDuration = `${duration}s`;
+            
+            orbsContainer.appendChild(orb);
+        }
+
+        function updateUI() {
+            // Update Slides
+            slides.forEach((slide, index) => {
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+
+            // Update Dots
+            dots.forEach((dot, index) => {
+                if (index === currentSlide) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+
+            // Update Counter & Progress
+            counterEl.textContent = currentSlide + 1;
+            const progress = ((currentSlide) / (totalSlides - 1)) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                currentSlide++;
+                updateUI();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateUI();
+            }
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateUI();
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // Keyboard Navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                prevSlide();
+            } else if (e.key === 'f' || e.key === 'F') {
+                toggleFullscreen();
+            }
+        });
+
+        // PDF Generation
+        function generatePDF() {
+            // Temporarily modify body for PDF export
+            document.body.classList.add('pdf-export');
+            
+            const element = document.getElementById('presentation-container');
+            
+            // PDF Options
+            const opt = {
+                margin:       0,
+                filename:     'CuraMatch_PRO_Pitch_Deck.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, logging: false },
+                jsPDF:        { unit: 'px', format: [1122, 793], orientation: 'landscape' } // A4 Landscape size in px at 96dpi approx
+            };
+
+            // Generate PDF
+            html2pdf().set(opt).from(element).save().then(() => {
+                // Restore presentation view
+                document.body.classList.remove('pdf-export');
+                updateUI(); // Reset visual state
+            });
+        }
+        
+        // Initial setup
+        updateUI();
+    </script>
+</body>
+</html>

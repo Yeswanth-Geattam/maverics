@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CuraMatch AI Pro - Drug Clinical Testing & Performance Dashboard</title>
+    
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- External Leaflet CSS & Chart.js -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        body {
+            background: #F5FAFC;
+            color: #163A43;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        .dashboard-header {
+            background: #FFFFFF;
+            border-bottom: 1px solid var(--border-glow);
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+
+        .perf-container {
+            max-width: 1440px;
+            margin: 1.8rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .stat-grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card-perf {
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 1.25rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card-perf::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--primary);
+        }
+
+        .stat-card-perf.purple::before { background: var(--purple); }
+        .stat-card-perf.emerald::before { background: var(--accent); }
+        .stat-card-perf.amber::before { background: var(--warning); }
+
+        .stat-val-huge {
+            font-size: 2.1rem;
+            font-weight: 900;
+            margin: 0.35rem 0;
+            letter-spacing: -0.02em;
+        }
+
+        .grid-2col-perf {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .grid-equal-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-box {
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 1.25rem;
+            height: 380px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-canvas-wrapper {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .roadmap-stepper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            padding: 1.25rem;
+            border-radius: 14px;
+            margin-bottom: 1.5rem;
+        }
+
+        .step-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            flex: 1;
+            text-align: center;
+        }
+
+        .step-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            right: -50%;
+            width: 100%;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.15);
+            z-index: 1;
+        }
+
+        .step-item.active:not(:last-child)::after {
+            background: var(--accent);
+        }
+
+        .step-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(30, 41, 59, 0.9);
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            z-index: 2;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+
+        .step-item.completed .step-icon {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: #0F5C63;
+            color: #0F5C63;
+        }
+
+        .step-item.active .step-icon {
+            background: rgba(139, 92, 246, 0.2);
+            border-color: #6D28D9;
+            color: #6D28D9;
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- STAKEHOLDER EXECUTIVE DASHBOARD HEADER -->
+    <header class="dashboard-header">
+        <div style="display: flex; align-items: center; gap: 1.25rem;">
+            <a href="index.html" class="icon-btn" style="text-decoration:none; display:flex; align-items:center; justify-content:center; width:40px; height:40px; background:rgba(30,41,59,0.8); border-radius:10px; border:1px solid var(--border-color);">
+                <i class="fa-solid fa-arrow-left text-cyan"></i>
+            </a>
+            <div>
+                <span class="badge-tag text-purple mb-1" id="dashSponsorTag"><i class="fa-solid fa-building-ngo"></i> Eli Lilly</span>
+                <h1 style="font-size: 1.35rem; font-weight: 900; margin: 0; color: #163A43;">
+                    <i class="fa-solid fa-flask-vial text-amber"></i> Drug Clinical Testing & Performance Executive Dashboard
+                </h1>
+            </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <div style="display: flex; flex-direction: column; align-items: flex-end; background: #F5FAFC; padding: 0.4rem 0.85rem; border-radius: 10px; border: 1px solid var(--border-glow);">
+                <span style="font-size:0.72rem; color:#B45309; font-weight:800; text-transform:uppercase;"><i class="fa-solid fa-prescription-bottle-medical"></i> Specific Drug Performance Report</span>
+                <strong id="dashActiveDrugTitle" style="font-size:0.95rem; font-weight:900; color:#0F5C63; margin-top:2px;">Keytruda (Pembrolizumab) 200mg IV</strong>
+            </div>
+
+            <button onclick="downloadExecutivePdfReport()" class="btn-primary" style="background: var(--purple); border-color: #6D28D9;">
+                <i class="fa-solid fa-file-pdf"></i> Export Executive PDF Report
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN DASHBOARD CONTENT CONTAINER -->
+    <main class="perf-container">
+
+        <!-- PROTOCOL SUMMARY & MILESTONE ROADMAP -->
+        <div class="roadmap-stepper mb-4">
+            <div class="step-item completed">
+                <div class="step-icon"><i class="fa-solid fa-check"></i></div>
+                <div style="font-size: 0.8rem; font-weight: 800; color: #0F5C63; margin-top: 0.5rem;">Phase I Pre-Clinical</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted);">100% Passed (Safety)</div>
+            </div>
+
+            <div class="step-item completed">
+                <div class="step-icon"><i class="fa-solid fa-check"></i></div>
+                <div style="font-size: 0.8rem; font-weight: 800; color: #0F5C63; margin-top: 0.5rem;">Phase II Proof-of-Concept</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted);">100% Passed (Dose)</div>
+            </div>
+
+            <div class="step-item active">
+                <div class="step-icon"><i class="fa-solid fa-spinner fa-spin"></i></div>
+                <div style="font-size: 0.8rem; font-weight: 800; color: #6D28D9; margin-top: 0.5rem;" id="dashRoadmapStage">Phase III Pivotal Trial</div>
+                <div style="font-size: 0.72rem; color: #6D28D9;" id="dashRoadmapProgress">92% Active Cohort</div>
+            </div>
+
+            <div class="step-item">
+                <div class="step-icon"><i class="fa-solid fa-award"></i></div>
+                <div style="font-size: 0.8rem; font-weight: 800; color: var(--text-muted); margin-top: 0.5rem;">FDA NDA Submission</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted);">Scheduled Q4 2026</div>
+            </div>
+        </div>
+
+        <!-- TOP KPI STAT CARDS -->
+        <div class="stat-grid-4">
+            <div class="stat-card-perf emerald">
+                <span style="font-size: 0.75rem; color: #52656D; font-weight: 800;">THERAPEUTIC RESPONSE RATE</span>
+                <div class="stat-val-huge" style="color:#0F5C63;" id="dashValResponse">94.2%</div>
+                <span style="font-size: 0.78rem; color: #0F5C63; font-weight: 800;"><i class="fa-solid fa-circle-check" style="color:#0F7C78;"></i> High Clinical Efficacy</span>
+            </div>
+
+            <div class="stat-card-perf">
+                <span style="font-size: 0.75rem; color: #52656D; font-weight: 800;">BIOMARKER CLEARANCE</span>
+                <div class="stat-val-huge" style="color:#0F5C63;" id="dashValBiomarker">-1.4% HbA1c Drop</div>
+                <span style="font-size: 0.78rem; color: #0F5C63; font-weight: 800;"><i class="fa-solid fa-dna" style="color:#159A9C;"></i> Quantified Lab Reduction</span>
+            </div>
+
+            <div class="stat-card-perf amber">
+                <span style="font-size: 0.75rem; color: #52656D; font-weight: 800;">MEDICATION ADHERENCE</span>
+                <div class="stat-val-huge" style="color:#B45309;" id="dashValAdherence">97.8%</div>
+                <span style="font-size: 0.78rem; color: #B45309; font-weight: 800;"><i class="fa-solid fa-pills" style="color:#B45309;"></i> Smart Bottle Verified</span>
+            </div>
+
+            <div class="stat-card-perf purple">
+                <span style="font-size: 0.75rem; color: #52656D; font-weight: 800;">SAFETY & TOXICITY PROFILE</span>
+                <div class="stat-val-huge" style="color:#6f42c1;" id="dashValSafety">0 SAEs</div>
+                <span style="font-size: 0.78rem; color: #6f42c1; font-weight: 800;"><i class="fa-solid fa-shield-check" style="color:#6f42c1;"></i> 100% Organ Tolerability</span>
+            </div>
+        </div>
+
+        <!-- CHARTS SECTION ROW 1 -->
+        <div class="grid-2col-perf">
+            <!-- BIOMARKER CLEARANCE CURVE CHART -->
+            <div class="chart-box">
+                <div class="flex-between mb-2">
+                    <div>
+                        <h4 style="font-size: 1rem; font-weight: 800; margin: 0; color: var(--cyan);">
+                            <i class="fa-solid fa-chart-line"></i> Biomarker Reduction Curve (Baseline vs Cycle 1 & 2 Dosing)
+                        </h4>
+                        <span style="font-size: 0.75rem; color: var(--text-muted);" id="dashBiomarkerSub">Tracking mean primary biomarker clearance across enrolled cohort</span>
+                    </div>
+                    <span class="badge-tag text-emerald">Lab Verified Data</span>
+                </div>
+                <div class="chart-canvas-wrapper">
+                    <canvas id="dashBiomarkerChart"></canvas>
+                </div>
+            </div>
+
+            <!-- CLINICAL TESTING STATS BREAKDOWN -->
+            <div class="card glass-panel" style="padding: 1.25rem; display: flex; flex-direction: column; justify-content: space-between;">
+                <h4 style="font-size: 1rem; font-weight: 800; color: #0F5C63; margin: 0 0 0.85rem 0;">
+                    <i class="fa-solid fa-vial-circle-check"></i> Clinical Testing Progress
+                </h4>
+
+                <div style="background: #F5FAFC; border: 1px solid var(--border-color); padding: 0.85rem; border-radius: 10px; margin-bottom: 0.75rem;">
+                    <span style="font-size: 0.72rem; color: var(--text-muted);">TOTAL DOSES ADMINISTERED</span><br>
+                    <strong id="dashDetailDoses" style="font-size: 1.15rem; color: var(--cyan);">18,420 Oral Doses</strong>
+                </div>
+
+                <div style="background: #F5FAFC; border: 1px solid var(--border-color); padding: 0.85rem; border-radius: 10px; margin-bottom: 0.75rem;">
+                    <span style="font-size: 0.72rem; color: var(--text-muted);">TESTING DURATION</span><br>
+                    <strong id="dashDetailDays" style="font-size: 1.15rem; color: #B45309;">540 Days Active</strong>
+                </div>
+
+                <div style="background: #F5FAFC; border: 1px solid var(--border-color); padding: 0.85rem; border-radius: 10px; margin-bottom: 0.75rem;">
+                    <span style="font-size: 0.72rem; color: var(--text-muted);">ACTIVE TRIAL SITES</span><br>
+                    <strong id="dashDetailSites" style="font-size: 1.15rem; color: var(--primary);">72 Global Centers</strong>
+                </div>
+
+                <div style="background: #F5FAFC; border: 1px solid var(--border-color); padding: 0.85rem; border-radius: 10px;">
+                    <span style="font-size: 0.72rem; color: var(--text-muted);">ENROLLED COHORT</span><br>
+                    <strong id="dashDetailCohort" style="font-size: 1.15rem; color: #0F5C63;">736 / 800 Patients</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHARTS SECTION ROW 2 -->
+        <div class="grid-equal-2">
+            <!-- PATIENT ADHERENCE & COMPLIANCE BAR CHART -->
+            <div class="chart-box">
+                <div class="flex-between mb-2">
+                    <h4 style="font-size: 1rem; font-weight: 800; margin: 0; color: #B45309;">
+                        <i class="fa-solid fa-prescription-bottle-medical"></i> Dose Adherence Distribution Across Clinical Sites
+                    </h4>
+                    <span class="badge-tag text-amber">Part 11 Verified</span>
+                </div>
+                <div class="chart-canvas-wrapper">
+                    <canvas id="dashAdherenceChart"></canvas>
+                </div>
+            </div>
+
+            <!-- SAFETY & TOXICITY RADAR CHART -->
+            <div class="chart-box">
+                <div class="flex-between mb-2">
+                    <h4 style="font-size: 1rem; font-weight: 800; margin: 0; color: #6D28D9;">
+                        <i class="fa-solid fa-shield-heart"></i> Safety & Organ Tolerability Profile (Grade 1-4 SAE Audit)
+                    </h4>
+                    <span class="badge-tag text-purple">Zero SAEs</span>
+                </div>
+                <div class="chart-canvas-wrapper">
+                    <canvas id="dashSafetyChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- EXECUTIVE SUMMARY & KEY TRIAL FINDINGS -->
+        <div class="solver-highlight-box mb-4" style="border-left-color: #0F5C63; margin-top: 0; padding: 1.25rem;">
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase; margin-bottom: 0.35rem;">
+                <i class="fa-solid fa-microscope text-cyan"></i> EXECUTIVE CLINICAL TRIAL FINDINGS & EFFICACY SUMMARY
+            </div>
+            <p id="dashKeyFinding" style="font-size: 1rem; line-height: 1.6; color: #163A43; margin: 0;">
+                Jardiance 10mg QD demonstrated sustained glycemic reduction with positive cardiorenal protective endpoints across all clinical sites.
+            </p>
+        </div>
+
+    </main>
+
+    <!-- DASHBOARD LOGIC SCRIPT -->
+    <script>
+        const perfDatabase = {
+            'NCT048821': {
+                nct: 'NCT048821',
+                sponsor: 'Eli Lilly',
+                drug: 'Jardiance (Empagliflozin) 10mg Oral QD',
+                indication: 'Type 2 Diabetes Mellitus (SGLT2i)',
+                phase: 'Phase III (Nearing Completion)',
+                progressPercent: 92,
+                dosesAdministered: '18,420 Oral Doses',
+                testingDays: '540 Days Active',
+                activeSites: '72 Global Centers',
+                enrolledCount: '736 / 800 Patients',
+                responseRate: '94.2%',
+                biomarkerClearance: '-1.4% HbA1c Drop',
+                adherenceRate: '97.8%',
+                safetyProfile: '0 SAEs (100% Renal Safety)',
+                keyFinding: 'Jardiance 10mg QD demonstrated sustained glycemic reduction (-1.4% HbA1c mean reduction) with positive cardiorenal protective endpoints across all 72 clinical sites.',
+                bioLabels: ['Baseline', 'Week 4', 'Week 8', 'Week 12', 'Week 16', 'Week 24'],
+                bioData: [8.6, 8.1, 7.8, 7.5, 7.3, 7.2],
+                bioUnit: 'HbA1c (%)',
+                adherenceData: [98.5, 97.2, 98.1, 96.9, 98.4]
+            },
+            'NCT088310': {
+                nct: 'NCT088310',
+                sponsor: 'Eli Lilly',
+                drug: 'Donanemab 700mg IV Infusion Q4W',
+                indication: 'Early Alzheimer\'s Disease (Anti-Amyloid mAb)',
+                phase: 'Phase II (Active Testing)',
+                progressPercent: 60,
+                dosesAdministered: '2,100 Infusions',
+                testingDays: '240 Days Active',
+                activeSites: '36 Global Centers',
+                enrolledCount: '210 / 350 Patients',
+                responseRate: '85.2%',
+                biomarkerClearance: '-34.1% Plaque Drop',
+                adherenceRate: '99.0%',
+                safetyProfile: '0 ARIA-E Microhemorrhages',
+                keyFinding: 'Donanemab 700mg IV Q4W demonstrated robust cortical amyloid plaque clearance on post-Dose 1 PET scans with cognitive stabilization (MMSE 25/30).',
+                bioLabels: ['Baseline', 'Month 1', 'Month 2', 'Month 3', 'Month 4', 'Month 6'],
+                bioData: [100, 85, 76, 70, 67, 65.9],
+                bioUnit: 'Amyloid PET Burden (%)',
+                adherenceData: [99.5, 98.9, 99.2, 98.8, 99.1]
+            },
+            'NCT071204': {
+                nct: 'NCT071204',
+                sponsor: 'Merck & Co.',
+                drug: 'Keytruda (Pembrolizumab) 200mg IV Q3W',
+                indication: 'Triple-Negative Breast Cancer (TNBC PD-L1 mAb)',
+                phase: 'Phase III (Active Testing)',
+                progressPercent: 78,
+                dosesAdministered: '3,840 Infusions',
+                testingDays: '420 Days Active',
+                activeSites: '48 Global Hospital Centers',
+                enrolledCount: '340 / 500 Patients',
+                responseRate: '88.4%',
+                biomarkerClearance: '-68.5% Tumor Drop',
+                adherenceRate: '98.4%',
+                safetyProfile: '0 SAEs (96.5% Tolerability)',
+                keyFinding: 'Keytruda 200mg IV Q3W demonstrated statistically significant tumor clearance (-68.5% mean volume reduction) in Phase III cohort with zero high-grade immune adverse events.',
+                bioLabels: ['Baseline', 'Cycle 1', 'Cycle 2', 'Cycle 3', 'Cycle 4', 'Cycle 6'],
+                bioData: [4.2, 3.8, 3.2, 2.5, 1.8, 1.3],
+                bioUnit: 'Tumor Volume (cm)',
+                adherenceData: [98.8, 98.2, 98.5, 97.9, 98.4]
+            },
+            'NCT060122': {
+                nct: 'NCT060122',
+                sponsor: 'AstraZeneca',
+                drug: 'Tagrisso (Osimertinib) 80mg Oral QD',
+                indication: 'NSCLC EGFR Exon 19 Deletion TKI',
+                phase: 'Phase III (Active Testing)',
+                progressPercent: 84,
+                dosesAdministered: '9,120 Doses',
+                testingDays: '380 Days Active',
+                activeSites: '54 Global Centers',
+                enrolledCount: '504 / 600 Patients',
+                responseRate: '91.8%',
+                biomarkerClearance: '-71.7% ctDNA Drop',
+                adherenceRate: '99.2%',
+                safetyProfile: 'Grade 1 Rash Only (0 QTc SAEs)',
+                keyFinding: 'Tagrisso 80mg QD achieved rapid circulating tumor DNA clearance (-71.7% clearance rate) in 91.8% of Exon 19 del patients within 28 days of Dose 1 initiation.',
+                bioLabels: ['Baseline', 'Day 7', 'Day 14', 'Day 21', 'Day 28', 'Day 60'],
+                bioData: [42.8, 31.0, 22.4, 16.2, 12.1, 8.5],
+                bioUnit: 'EGFR ctDNA VAF (%)',
+                adherenceData: [99.6, 99.1, 99.4, 98.9, 99.2]
+            },
+            'NCT051190': {
+                nct: 'NCT051190',
+                sponsor: 'Roche',
+                drug: 'Perjeta + Herceptin IV Infusion',
+                indication: 'HER2+ Metastatic Breast Cancer',
+                phase: 'Phase III (Active Testing)',
+                progressPercent: 70,
+                dosesAdministered: '4,200 Infusions',
+                testingDays: '310 Days Active',
+                activeSites: '42 Global Centers',
+                enrolledCount: '280 / 400 Patients',
+                responseRate: '86.5%',
+                biomarkerClearance: '-22.4% HER2 Signal Drop',
+                adherenceRate: '97.5%',
+                safetyProfile: 'LVEF Cardiac Function 58% Stable',
+                keyFinding: 'Dual HER2 targeting with Perjeta + Herceptin showed significant progression-free survival gains with stable cardiac ejection fraction (LVEF 58% average).',
+                bioLabels: ['Baseline', 'Cycle 1', 'Cycle 2', 'Cycle 3', 'Cycle 4', 'Cycle 5'],
+                bioData: [100, 92, 85, 80, 78, 77.6],
+                bioUnit: 'HER2 Overexpression (%)',
+                adherenceData: [98.1, 97.4, 97.8, 96.9, 97.5]
+            },
+            'NCT043321': {
+                nct: 'NCT043321',
+                sponsor: 'Novartis',
+                drug: 'Sacubitril/Valsartan 97/103mg BID',
+                indication: 'Myocardial Infarction / ARNI Cardiac Care',
+                phase: 'Phase III (Active Testing)',
+                progressPercent: 65,
+                dosesAdministered: '6,400 Oral Doses',
+                testingDays: '290 Days Active',
+                activeSites: '30 Global Centers',
+                enrolledCount: '208 / 320 Patients',
+                responseRate: '89.0%',
+                biomarkerClearance: '-31.2% NT-proBNP Drop',
+                adherenceRate: '96.8%',
+                safetyProfile: '0 Severe Hypotension SAEs',
+                keyFinding: 'ARNI dual therapy effectively reduced NT-proBNP baseline cardiac overload (-31.2% drop) and prevented heart failure readmissions post-MI.',
+                bioLabels: ['Baseline', 'Month 1', 'Month 2', 'Month 3', 'Month 4', 'Month 6'],
+                bioData: [1200, 980, 890, 840, 820, 825],
+                bioUnit: 'NT-proBNP (pg/mL)',
+                adherenceData: [97.5, 96.8, 97.1, 96.2, 96.8]
+            },
+            'NCT099411': {
+                nct: 'NCT099411',
+                sponsor: 'Pfizer Inc.',
+                drug: 'Onivyde 43mg/m2 IV Infusion',
+                indication: 'Metastatic Pancreatic Adenocarcinoma (PDAC)',
+                phase: 'Phase III (Newly Initiated)',
+                progressPercent: 15,
+                dosesAdministered: '120 Infusions',
+                testingDays: '45 Days Active',
+                activeSites: '28 Global Centers',
+                enrolledCount: '45 / 300 Patients',
+                responseRate: '78.5%',
+                biomarkerClearance: '-18.4% CA19-9 Drop',
+                adherenceRate: '95.0%',
+                safetyProfile: 'Manageable GI Tolerability Profile',
+                keyFinding: 'Newly launched liposomal irinotecan protocol showing promising early CA19-9 biomarker response in metastatic PDAC cohort.',
+                bioLabels: ['Baseline', 'Day 7', 'Day 14', 'Day 21', 'Day 28', 'Day 45'],
+                bioData: [450, 410, 390, 375, 368, 367],
+                bioUnit: 'CA19-9 Level (U/mL)',
+                adherenceData: [96.0, 94.8, 95.2, 94.2, 95.0]
+            }
+        };
+
+        let biomarkerChartInstance = null;
+        let adherenceChartInstance = null;
+        let safetyChartInstance = null;
+
+        let activeDashNctKey = 'NCT071204';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const nctParam = urlParams.get('nct');
+            if (nctParam) {
+                activeDashNctKey = nctParam.replace('-', '').toUpperCase();
+            }
+            updateDashDrugView();
+        });
+
+        function updateDashDrugView() {
+            const data = perfDatabase[activeDashNctKey] || perfDatabase['NCT071204'];
+
+            const titleEl = document.getElementById('dashActiveDrugTitle');
+            if (titleEl) titleEl.textContent = `${data.drug} (${data.nct})`;
+
+            document.getElementById('dashSponsorTag').innerHTML = `<i class="fa-solid fa-building-ngo"></i> ${data.sponsor}`;
+            document.getElementById('dashRoadmapStage').textContent = data.phase;
+            document.getElementById('dashRoadmapProgress').textContent = `${data.progressPercent}% Active Cohort`;
+
+            document.getElementById('dashValResponse').textContent = data.responseRate;
+            document.getElementById('dashValBiomarker').textContent = data.biomarkerClearance;
+            document.getElementById('dashValAdherence').textContent = data.adherenceRate;
+            document.getElementById('dashValSafety').textContent = data.safetyProfile;
+
+            document.getElementById('dashDetailDoses').textContent = data.dosesAdministered;
+            document.getElementById('dashDetailDays').textContent = data.testingDays;
+            document.getElementById('dashDetailSites').textContent = data.activeSites;
+            document.getElementById('dashDetailCohort').textContent = data.enrolledCount;
+
+            document.getElementById('dashBiomarkerSub').textContent = `Tracking mean primary biomarker clearance (${data.bioUnit}) across enrolled trial cohort`;
+            document.getElementById('dashKeyFinding').textContent = data.keyFinding;
+
+            renderBiomarkerChart(data);
+            renderAdherenceChart(data);
+            renderSafetyChart();
+        }
+
+        function renderBiomarkerChart(data) {
+            const ctx = document.getElementById('dashBiomarkerChart');
+            if (!ctx) return;
+
+            if (biomarkerChartInstance) biomarkerChartInstance.destroy();
+
+            biomarkerChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.bioLabels,
+                    datasets: [{
+                        label: data.bioUnit,
+                        data: data.bioData,
+                        borderColor: '#38bdf8',
+                        backgroundColor: 'rgba(56, 189, 248, 0.15)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.35,
+                        pointBackgroundColor: '#10b981',
+                        pointRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: true, labels: { color: '#163A43', font: { weight: 'bold' } } } },
+                    scales: {
+                        x: { ticks: { color: '#52656D', font: { weight: 'bold' } }, grid: { color: 'rgba(15,92,99,0.08)' } },
+                        y: { ticks: { color: '#52656D', font: { weight: 'bold' } }, grid: { color: 'rgba(15,92,99,0.08)' } }
+                    }
+                }
+            });
+        }
+
+        function renderAdherenceChart(data) {
+            const ctx = document.getElementById('dashAdherenceChart');
+            if (!ctx) return;
+
+            if (adherenceChartInstance) adherenceChartInstance.destroy();
+
+            adherenceChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Site 01 (Johns Hopkins)', 'Site 02 (Mayo Clinic)', 'Site 03 (Charité Berlin)', 'Site 04 (MD Anderson)', 'Site 05 (UCSF)'],
+                    datasets: [{
+                        label: 'Patient Adherence %',
+                        data: data.adherenceData,
+                        backgroundColor: ['#10b981', '#38bdf8', '#a855f7', '#f59e0b', '#10b981'],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { ticks: { color: '#52656D', font: { weight: 'bold' } }, grid: { color: 'rgba(15,92,99,0.08)' } },
+                        y: { min: 80, max: 100, ticks: { color: '#52656D', font: { weight: 'bold' } }, grid: { color: 'rgba(15,92,99,0.08)' } }
+                    }
+                }
+            });
+        }
+
+        function renderSafetyChart() {
+            const ctx = document.getElementById('dashSafetyChart');
+            if (!ctx) return;
+
+            if (safetyChartInstance) safetyChartInstance.destroy();
+
+            safetyChartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Renal Safety', 'Hepatic Function', 'Cardiac LVEF', 'Grade 1 Tolerability', 'Zero Grade 3 SAEs', 'Immune Safety'],
+                    datasets: [{
+                        label: 'Trial Safety Index Score',
+                        data: [98, 96, 99, 95, 100, 97],
+                        backgroundColor: 'rgba(168, 85, 247, 0.25)',
+                        borderColor: '#a855f7',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#10b981'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(15,92,99,0.12)' },
+                            grid: { color: 'rgba(15,92,99,0.12)' },
+                            pointLabels: { color: '#163A43', font: { size: 11, weight: 'bold' } },
+                            ticks: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function downloadExecutivePdfReport() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const nctParam = urlParams.get('nct') || 'NCT071204';
+            const cleanNct = nctParam.replace('-', '').toUpperCase();
+            const element = document.querySelector('.perf-container');
+            
+            if (window.html2pdf) {
+                const opt = {
+                    margin:       0.2,
+                    filename:     `Executive_Drug_Performance_Report_${cleanNct}.pdf`,
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2, useCORS: true, logging: false },
+                    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+                };
+                html2pdf().set(opt).from(element).save();
+            } else {
+                window.print();
+            }
+        }
+    </script>
+
+    <script src="app.js"></script>
+</body>
+</html>

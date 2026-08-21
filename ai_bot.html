@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CuraMatch AI Clinical Copilot - Standalone Assistant</title>
+    <!-- FontAwesome & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #050a15;
+            --panel-bg: rgba(10, 16, 31, 0.95);
+            --border-glow: rgba(56, 189, 248, 0.3);
+            --primary: #38bdf8;
+            --primary-glow: rgba(56, 189, 248, 0.4);
+            --accent: #10b981;
+            --purple: #a855f7;
+            --amber: #f59e0b;
+            --red: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(56, 189, 248, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(168, 85, 247, 0.08) 0%, transparent 40%);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* HEADER */
+        .bot-header {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 2px solid var(--border-glow);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.6);
+        }
+
+        .bot-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .bot-brand-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #0284c7, #3b82f6);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1.3rem;
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .bot-brand-title h1 {
+            font-size: 1.25rem;
+            font-weight: 900;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .bot-brand-title p {
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .badge-ver {
+            background: rgba(16, 185, 129, 0.2);
+            color: #0F5C63;
+            border: 1px solid var(--accent);
+            font-size: 0.7rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-weight: 700;
+        }
+
+        /* ROLE MODE SELECTOR BAR */
+        .role-bar {
+            background: rgba(10, 16, 31, 0.8);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding: 0.65rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            overflow-x: auto;
+        }
+
+        .role-bar label {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            white-space: nowrap;
+        }
+
+        .role-btn {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: var(--text-muted);
+            padding: 0.45rem 0.95rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+        }
+
+        .role-btn:hover {
+            border-color: var(--primary);
+            color: #fff;
+        }
+
+        .role-btn.active[data-role="STAKEHOLDER"] {
+            background: rgba(168, 85, 247, 0.25);
+            border-color: #6D28D9;
+            color: #fff;
+            box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
+        }
+
+        .role-btn.active[data-role="RESEARCHER"] {
+            background: rgba(245, 158, 11, 0.25);
+            border-color: #B45309;
+            color: #fff;
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+        }
+
+        .role-btn.active[data-role="DOCTOR"] {
+            background: rgba(56, 189, 248, 0.25);
+            border-color: var(--primary);
+            color: #fff;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+        }
+
+        .role-btn.active[data-role="ADMIN"] {
+            background: rgba(16, 185, 129, 0.25);
+            border-color: #0F5C63;
+            color: #fff;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+        }
+
+        /* MAIN LAYOUT */
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 1.5rem;
+            height: calc(100vh - 135px);
+        }
+
+        /* CHAT MESSAGES SCROLL AREA */
+        .messages-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            padding-right: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .msg {
+            max-width: 85%;
+            padding: 1rem 1.25rem;
+            border-radius: 16px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .msg-bot {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid var(--border-glow);
+            color: #e2e8f0;
+            align-self: flex-start;
+            border-top-left-radius: 4px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+
+        .msg-user {
+            background: linear-gradient(135deg, rgba(2, 132, 199, 0.35), rgba(59, 130, 246, 0.35));
+            border: 1px solid var(--primary);
+            color: #fff;
+            align-self: flex-end;
+            border-top-right-radius: 4px;
+            box-shadow: 0 8px 25px rgba(2, 132, 199, 0.2);
+        }
+
+        /* QUICK PRESET CHIPS */
+        .preset-chips-box {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .chips-label {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .chip-btn {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--border-glow);
+            color: #e2e8f0;
+            padding: 0.55rem 0.95rem;
+            border-radius: 10px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+        }
+
+        .chip-btn:hover {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: var(--primary);
+            color: #fff;
+            transform: translateX(4px);
+        }
+
+        /* INPUT ROW */
+        .input-box {
+            background: rgba(15, 23, 42, 0.95);
+            border: 2px solid var(--border-glow);
+            border-radius: 14px;
+            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
+
+        .input-box input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #fff;
+            padding: 0.6rem 0.85rem;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .input-box input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, #0284c7, #3b82f6);
+            color: #fff;
+            border: none;
+            padding: 0.75rem 1.4rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .send-btn:hover {
+            box-shadow: 0 0 20px var(--primary-glow);
+            transform: scale(1.02);
+        }
+
+        /* CODE & HIGHLIGHTS */
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(0,0,0,0.4);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            color: var(--primary);
+        }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.15);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- STANDALONE HEADER -->
+    <header class="bot-header">
+        <div class="bot-brand">
+            <div class="bot-brand-icon">
+                <i class="fa-solid fa-robot"></i>
+            </div>
+            <div class="bot-brand-title">
+                <h1>CuraMatch AI Clinical Copilot <span class="badge-ver"><i class="fa-solid fa-shield-check"></i> 21 CFR Part 11</span></h1>
+                <p>Standalone Clinical Trial Intelligence & XAI Decision Assistant Engine</p>
+            </div>
+        </div>
+        <div>
+            <a href="index.html" class="role-btn" style="text-decoration:none;">
+                <i class="fa-solid fa-house"></i> Main Portal
+            </a>
+        </div>
+    </header>
+
+    <!-- ROLE MODE SELECTOR BAR -->
+    <nav class="role-bar">
+        <label><i class="fa-solid fa-user-gear"></i> Active Role Mode:</label>
+        <button class="role-btn active" data-role="DOCTOR" onclick="switchRoleMode('DOCTOR')">
+            <i class="fa-solid fa-user-doctor"></i> 3. Doctor / Clinical Tester
+        </button>
+        <button class="role-btn" data-role="RESEARCHER" onclick="switchRoleMode('RESEARCHER')">
+            <i class="fa-solid fa-vial-circle-check"></i> 2. Clinical Researcher R&D
+        </button>
+        <button class="role-btn" data-role="STAKEHOLDER" onclick="switchRoleMode('STAKEHOLDER')">
+            <i class="fa-solid fa-chart-line"></i> 1. Pharma Stakeholder
+        </button>
+        <button class="role-btn" data-role="ADMIN" onclick="switchRoleMode('ADMIN')">
+            <i class="fa-solid fa-shield-audit"></i> 4. Trial Admin (Audit)
+        </button>
+    </nav>
+
+    <!-- MAIN CHAT INTERFACE -->
+    <main class="chat-container">
+        <!-- MESSAGES FEED -->
+        <div id="chatMessagesFeed" class="messages-list">
+            <!-- BOT INITIAL GREETING -->
+            <div class="msg msg-bot">
+                👋 Hello Doctor! I am your <strong>CuraMatch Standalone AI Clinical Copilot</strong>. Ask me any clinical questions regarding protocol eligibility, Quest/Epic EMR lab values, drug safety guidelines, or 21 CFR Part 11 audit trails!
+            </div>
+
+            <!-- PRESET CHIPS BOX -->
+            <div id="chipsContainer" class="preset-chips-box">
+                <div class="chips-label">Quick Clinical Doubts:</div>
+                <button class="chip-btn" onclick="sendPresetQuery('Why is Subject PT-10201 eligible for Keytruda?')">
+                    🔎 Why is Subject PT-10201 eligible for Keytruda?
+                </button>
+                <button class="chip-btn" onclick="sendPresetQuery('What is the eGFR cutoff for Jardiance (NCT048821)?')">
+                    📊 What is the eGFR cutoff for Jardiance (NCT048821)?
+                </button>
+                <button class="chip-btn" onclick="sendPresetQuery('Check Donanemab ARIA-E edema safety rules')">
+                    💊 Check Donanemab ARIA-E edema safety rules
+                </button>
+            </div>
+        </div>
+
+        <!-- INPUT BAR -->
+        <div class="input-box">
+            <input type="text" id="userInput" placeholder="Ask AI Copilot any clinical doubt..." onkeydown="if(event.key==='Enter') executeSendQuery()">
+            <button class="send-btn" onclick="executeSendQuery()">
+                <i class="fa-solid fa-paper-plane"></i>
+                <span>Ask AI</span>
+            </button>
+        </div>
+    </main>
+
+    <script>
+        let currentRoleMode = 'DOCTOR';
+
+        const rolePresets = {
+            'DOCTOR': {
+                title: 'Doctor / Clinical Tester Mode',
+                greeting: '👋 Hello Doctor! Ask me about patient match eligibility, Quest/Epic EMR lab values (HbA1c, eGFR), or post-dose care governance.',
+                chips: [
+                    { text: '🔎 Why is Subject PT-10201 eligible for Keytruda?', query: 'Why is Subject PT-10201 eligible for Keytruda?' },
+                    { text: '📊 What is the eGFR cutoff for Jardiance (NCT048821)?', query: 'What is the eGFR cutoff for Jardiance (NCT048821)?' },
+                    { text: '💊 Check Donanemab ARIA-E edema safety rules', query: 'Check Donanemab ARIA-E edema safety rules' }
+                ]
+            },
+            'RESEARCHER': {
+                title: 'Clinical Researcher & R&D Mode',
+                greeting: '👋 Hello Researcher! Ask me about AI dose suggestions, post-dose inter-dose feedback, registering new trial protocols, or Grade 1 fatigue mitigation.',
+                chips: [
+                    { text: '🧪 What is the AI Improvement Suggestion for Keytruda Dose 2?', query: 'What is the AI Improvement Suggestion for Keytruda Dose 2?' },
+                    { text: '📝 How to Register a New Pharma Trial Protocol (NCT ID)?', query: 'How to Register a New Pharma Trial Protocol (NCT ID)?' },
+                    { text: '⚠️ Check Inter-Dose Toxicity & Grade 1 Fatigue Mitigation', query: 'Check Inter-Dose Toxicity & Grade 1 Fatigue Mitigation' }
+                ]
+            },
+            'STAKEHOLDER': {
+                title: 'Pharma Stakeholder Mode',
+                greeting: '👋 Hello Sponsor! Ask me about trial grant budgets ($42.5M), Phase III efficacy, candidate enrollment targets, or executive drug performance analytics.',
+                chips: [
+                    { text: '📊 What is Merck & Co. Keytruda Portfolio ROI & Grant Budget?', query: 'What is Merck & Co. Keytruda Portfolio ROI & Grant Budget?' },
+                    { text: '📈 Show Phase III Efficacy & Global Site Performance for NCT071204', query: 'Show Phase III Efficacy & Global Site Performance for NCT071204' },
+                    { text: '💰 View Total Enrolled Candidate Financial Breakdown ($42.5M)', query: 'View Total Enrolled Candidate Financial Breakdown ($42.5M)' }
+                ]
+            },
+            'ADMIN': {
+                title: 'Trial Admin & FDA Audit Mode',
+                greeting: '👋 Hello Admin! Ask me about 21 CFR Part 11 SHA256 audit logs, patient density feasibility maps, or HIPAA privacy mode.',
+                chips: [
+                    { text: '🛡️ Verify 21 CFR Part 11 SHA256 Audit Hashes & EMR Grounding', query: 'Verify 21 CFR Part 11 SHA256 Audit Hashes & EMR Grounding' },
+                    { text: '🗺️ View Patient Density Feasibility Heatmap & City Clusters', query: 'View Patient Density Feasibility Heatmap & City Clusters' },
+                    { text: '🔒 Check HIPAA Anonymization Privacy Rules (PHI On/Off)', query: 'Check HIPAA Anonymization Privacy Rules (PHI On/Off)' }
+                ]
+            }
+        };
+
+        function switchRoleMode(role) {
+            currentRoleMode = role;
+            document.querySelectorAll('.role-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.role === role);
+            });
+
+            const config = rolePresets[role];
+            const feed = document.getElementById('chatMessagesFeed');
+
+            // Add role switch notification
+            const botNotice = document.createElement('div');
+            botNotice.className = 'msg msg-bot';
+            botNotice.innerHTML = `🔄 <strong>Switched to ${config.title}:</strong><br>${config.greeting}`;
+            feed.appendChild(botNotice);
+
+            // Update chips
+            renderChips(config.chips);
+            feed.scrollTop = feed.scrollHeight;
+        }
+
+        function renderChips(chipsList) {
+            const container = document.getElementById('chipsContainer');
+            if (!container) return;
+
+            let html = `<div class="chips-label">Quick Doubts for ${currentRoleMode} Mode:</div>`;
+            chipsList.forEach(c => {
+                html += `<button class="chip-btn" onclick="sendPresetQuery('${c.query.replace(/'/g, "\\'")}')">${c.text}</button>`;
+            });
+            container.innerHTML = html;
+        }
+
+        function sendPresetQuery(query) {
+            document.getElementById('userInput').value = query;
+            executeSendQuery();
+        }
+
+        function executeSendQuery() {
+            const input = document.getElementById('userInput');
+            const feed = document.getElementById('chatMessagesFeed');
+            const query = input.value.trim();
+
+            if (!query) return;
+
+            // Render User Message
+            const userMsg = document.createElement('div');
+            userMsg.className = 'msg msg-user';
+            userMsg.innerHTML = `<strong>${currentRoleMode}:</strong> ${query}`;
+            feed.appendChild(userMsg);
+
+            input.value = '';
+            feed.scrollTop = feed.scrollHeight;
+
+            // Generate AI Response
+            setTimeout(() => {
+                const botMsg = document.createElement('div');
+                botMsg.className = 'msg msg-bot';
+
+                let answer = '';
+                const q = query.toLowerCase();
+
+                if (q.includes('keytruda') || q.includes('pt-10201') || q.includes('evelyn')) {
+                    answer = `🧬 <strong>Keytruda (NCT071204) Clinical Dossier:</strong><br>
+                    • <strong>Subject:</strong> Dr. Evelyn Vance (PT-10201, 59y Female)<br>
+                    • <strong>Diagnosis:</strong> Triple-Negative Breast Cancer (TNBC, ICD-10: C50.919)<br>
+                    • <strong>Eligibility Score:</strong> <strong style="color:#0F5C63;">96% VERIFIED MATCH</strong> (PD-L1 positive VAF 42.8%)<br>
+                    • <strong>Post-Dose 1 Biomarker:</strong> -14.3% Tumor Size Reduction<br>
+                    • <strong>AI Suggestion for Dose 2:</strong> Pre-medicate with Antihistamine 30 min prior to Dose 2 to eliminate Grade 1 fatigue.`;
+                } else if (q.includes('jardiance') || q.includes('nct048821') || q.includes('egfr')) {
+                    answer = `📊 <strong>Jardiance (NCT048821) Inclusion & Exclusion Protocol:</strong><br>
+                    • <strong>Target Indication:</strong> Type 2 Diabetes Mellitus (ICD-10: E11.9)<br>
+                    • <strong>Glycemic Cutoff:</strong> HbA1c 7.5% - 10.5% (LOINC 4548-4)<br>
+                    • <strong>Renal Safety Limit:</strong> eGFR $\\ge 45 \\text{ mL/min/1.73m}^2$<br>
+                    • <strong>Exclusion Rule:</strong> Acute Stroke / MI within prior 6 months.<br>
+                    • <strong>Active Enrolled Cohort:</strong> 4 Candidates (Eleanor Vance, Marcus Sterling, Rachel Green, Helena Wayne).`;
+                } else if (q.includes('donanemab') || q.includes('alzheimer') || q.includes('aria')) {
+                    answer = `🧠 <strong>Donanemab (NCT088310) Safety & Efficacy Audit:</strong><br>
+                    • <strong>Target Indication:</strong> Early Alzheimer's Disease (ICD-10: G30.9)<br>
+                    • <strong>Dosing Regimen:</strong> 700mg IV Infusion Q4W<br>
+                    • <strong>Biomarker Clearance:</strong> -24.8% Cortical Plaque Drop on Amyloid PET<br>
+                    • <strong>ARIA-E Safety Scan:</strong> Brain MRI cleared zero cerebral edema (Grade 0 SAEs).`;
+                } else if (q.includes('merck') || q.includes('grant') || q.includes('roi') || q.includes('financial')) {
+                    answer = `💼 <strong>Pharma Stakeholder Financial & Portfolio Audit:</strong><br>
+                    • <strong>Active Trial Sponsor:</strong> Merck & Co. (Keytruda Pembrolizumab)<br>
+                    • <strong>Total Trial Grant Budget:</strong> <strong style="color:#6D28D9;">$42.5M Allocated</strong> across 48 Global Trial Centers.<br>
+                    • <strong>Recruitment Target:</strong> 500 Candidates Enrolled across Phase III sites.<br>
+                    • <strong>Phase III Efficacy Milestone:</strong> -14.3% Tumor Clearance achieved with 0 Drug-Related Discontinuations.`;
+                } else if (q.includes('sha256') || q.includes('heatmap') || q.includes('hipaa') || q.includes('audit')) {
+                    answer = `🛡️ <strong>Trial Admin & FDA 21 CFR Part 11 Audit Center:</strong><br>
+                    • <strong>4-Tier Bounding Box Grounding:</strong> Quest/Epic EMR LOINC entries verified with 0% AI hallucination drift.<br>
+                    • <strong>Cryptographic Audit Signature:</strong> <code>SHA256: e8f92a4b990142</code> logged under FDA 21 CFR Part 11.<br>
+                    • <strong>Feasibility City Heatmap:</strong> Baltimore (420 Patients), Chicago (680 Candidates), Houston (340 Patients), Boston (180 Patients).`;
+                } else {
+                    answer = `💡 <strong>Standalone AI Copilot Search Result for "${query}":</strong><br>
+                    • <strong>Active Role Mode:</strong> ${currentRoleMode}<br>
+                    • <strong>Protocol Status:</strong> Active & Enrolling across 6 Sponsor Companies (Merck, Eli Lilly, AstraZeneca, Roche, Novartis, Pfizer).<br>
+                    • <strong>Compliance:</strong> All candidate screening parameters are 21 CFR Part 11 & HIPAA compliant.`;
+                }
+
+                botMsg.innerHTML = answer;
+                feed.appendChild(botMsg);
+                feed.scrollTop = feed.scrollHeight;
+            }, 400);
+        }
+    </script>
+</body>
+</html>

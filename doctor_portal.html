@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CuraMatch PRO - Doctor & Clinical Tester Portal</title>
+    
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- External Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        body {
+            background: #F5FAFC;
+            color: #52656D;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, h4, h5, h6 { color: #163A43 !important; }
+        .text-muted { color: #3A4B53 !important; }
+        .clean-table th { background: #0F5C63 !important; color: #ffffff !important; }
+        .badge-pro, .badge-tag { background: #DDF5F0 !important; color: #0F5C63 !important; }
+        .card { background: #FFFFFF !important; }
+
+        .portal-header {
+            background: #FFFFFF;
+            border-bottom: 1px solid rgba(15,92,99,0.12);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+
+        .portal-container {
+            max-width: 1440px;
+            margin: 1.8rem auto;
+            padding: 0 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- DOCTOR PORTAL HEADER -->
+    <header class="portal-header">
+        <div style="display: flex; align-items: center; gap: 1.25rem;">
+            <a href="index.html" class="icon-btn" title="Switch Role" style="text-decoration:none; display:flex; align-items:center; justify-content:center; width:40px; height:40px; background:rgba(30,41,59,0.8); border-radius:10px; border:1px solid var(--border-color);">
+                <i class="fa-solid fa-arrow-left text-cyan"></i>
+            </a>
+            <div class="brand-text">
+                <span class="brand-name">CuraMatch <span class="badge-pro" style="background:var(--cyan); color:#000;">CLINICAL</span></span>
+                <span class="brand-sub">Doctor & Principal Investigator Portal (Blinded Specs View)</span>
+            </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 1.25rem;">
+            <div class="selector-box" style="margin:0;">
+                <label style="color: var(--cyan); font-size:0.72rem; font-weight:800;"><i class="fa-solid fa-prescription-bottle-medical"></i> Investigational Medicine Specs:</label>
+                <select id="activeTrialSelect" onchange="switchTrialProtocol()" style="font-weight: 800; background: #F5FAFC; color: var(--cyan); border-color: var(--cyan);">
+                    <option value="NCT-071204">NCT071204: Keytruda (Pembrolizumab) 200mg IV [TNBC PD-L1]</option>
+                    <option value="NCT-088310">NCT088310: Donanemab 700mg IV Infusion [Early Alzheimer's]</option>
+                    <option value="NCT-048821">NCT048821: Jardiance (Empagliflozin) 10mg Oral [T2D Diabetes]</option>
+                    <option value="NCT-060122">NCT060122: Tagrisso (Osimertinib) 80mg Oral [NSCLC EGFR Exon 19]</option>
+                    <option value="NCT-051190">NCT051190: Perjeta + Herceptin IV Infusion [HER2+ Breast Cancer]</option>
+                    <option value="NCT-043321">NCT043321: Sacubitril/Valsartan 97/103mg BID [ARNI Cardiac]</option>
+                    <option value="NCT-099411">NCT099411: Onivyde 43mg/m2 IV Infusion [Pancreatic PDAC]</option>
+                </select>
+            </div>
+
+            <a href="dosing_dashboard.html" target="_blank" class="privacy-pill-btn" style="background: rgba(56,189,248,0.2); border-color: var(--primary); color: var(--primary); text-decoration: none;">
+                <i class="fa-solid fa-prescription-bottle-medical"></i>
+                <span>Dosing Governance</span>
+            </a>
+
+            <div style="background: #FFFFFF; padding: 0.4rem 0.85rem; border-radius: 30px; border: 1px solid rgba(15,92,99,0.12); display: flex; align-items: center; gap: 0.75rem;">
+                <span style="font-size: 0.8rem; font-weight: 800; color: var(--cyan);">
+                    <i class="fa-solid fa-user-doctor text-cyan"></i> Role: 3. Doctor / Clinical Tester
+                </span>
+                <a href="index.html" class="btn-secondary btn-sm" style="padding: 0.2rem 0.6rem; font-size: 0.75rem; border-radius: 20px; text-decoration: none;">
+                    <i class="fa-solid fa-right-from-bracket text-red"></i> Switch Role
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- DOCTOR PORTAL NAV TABS -->
+    <nav class="app-nav-bar" style="border-bottom: 1px solid rgba(15,92,99,0.12); background: #FFFFFF;">
+        <div class="nav-container">
+            <button class="nav-tab-btn active" data-tab="upload-screening" onclick="switchNavTabDirect('upload-screening')">
+                <i class="fa-solid fa-cloud-arrow-up"></i> Upload Patient Dataset & Prescriptions
+            </button>
+            <button class="nav-tab-btn" data-tab="report-analyzer" onclick="switchNavTabDirect('report-analyzer')">
+                <i class="fa-solid fa-file-waveform"></i> Patient Past History Deep Scan
+            </button>
+            <button class="nav-tab-btn" data-tab="patient-matching" onclick="switchNavTabDirect('patient-matching')">
+                <i class="fa-solid fa-user-check"></i> Verified Candidates & Screener
+            </button>
+            <button class="nav-tab-btn" data-tab="patient-dosing-tracker" onclick="switchNavTabDirect('patient-dosing-tracker')">
+                <i class="fa-solid fa-prescription-bottle-medical"></i> Dosing & Patient Care Governance
+            </button>
+        </div>
+    </nav>
+
+    <!-- MAIN BODY CONTAINER -->
+    <main class="portal-container">
+        <!-- MODULE 1: UPLOAD DATASET & PRESCRIPTIONS -->
+        <section id="upload-screening" class="tab-content active">
+            <div class="card glass-panel mb-4" style="border: 2px solid var(--primary); background: #FFFFFF; padding: 1.5rem;">
+                <div class="card-header flex-between mb-3 pb-3">
+                    <div class="header-title">
+                        <i class="fa-solid fa-cloud-arrow-up icon-accent text-cyan" style="font-size: 1.5rem;"></i>
+                        <div>
+                            <h2 style="font-size: 1.3rem; font-weight: 900; color: #163A43;">Upload Patient Dataset, Doctor Prescriptions & Add Patients</h2>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 2px;">
+                                Upload patient datasets (.CSV / .JSON), scan doctor prescriptions, or manually register new patient records.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex-row">
+                        <button class="btn-secondary" onclick="openSyntheticPatientModal()"><i class="fa-solid fa-user-plus"></i> + Add New Patient Record</button>
+                        <button class="btn-primary" style="background:var(--accent); border-color:#0F5C63;" onclick="document.getElementById('batchDatasetInput').click()">
+                            <i class="fa-solid fa-bolt"></i> Batch Screen Dataset (12 Patients)
+                        </button>
+                        <input type="file" id="batchDatasetInput" accept=".csv,.json,.txt" class="hidden" onchange="handleBatchDatasetUpload(event)">
+                    </div>
+                </div>
+
+                <div class="grid-2col spacious-grid mb-3">
+                    <!-- Prescription OCR Scan Dropzone -->
+                    <div class="upload-drop-zone" onclick="document.getElementById('ocrPrescriptionInput').click()">
+                        <i class="fa-solid fa-file-prescription upload-icon text-cyan"></i>
+                        <h4 style="font-size: 1.05rem; font-weight: 800;">Upload Doctor Prescription Image (.PNG, .JPG, .WEBP)</h4>
+                        <p style="font-size: 0.78rem; color: var(--text-muted);">AI Computer Vision OCR scans handwritten/printed prescriptions, lab reports, and doctor notes.</p>
+                        <input type="file" id="ocrPrescriptionInput" accept="image/*" class="hidden" onchange="handlePrescriptionOcrUpload(event)">
+                        <button class="btn-secondary btn-sm mt-2" type="button" onclick="event.stopPropagation(); loadSamplePrescriptionOcr();">
+                            <i class="fa-solid fa-wand-magic-sparkles text-amber"></i> Try Sample Doctor Prescription Image Scan
+                        </button>
+                    </div>
+
+                    <!-- Dataset CSV Dropzone -->
+                    <div class="upload-drop-zone" onclick="document.getElementById('batchDatasetInput').click()">
+                        <i class="fa-solid fa-file-csv upload-icon text-emerald"></i>
+                        <h4 style="font-size: 1.05rem; font-weight: 800;">Upload Hospital Dataset (.CSV or .JSON)</h4>
+                        <p style="font-size: 0.78rem; color: var(--text-muted);">Batch screen 5,000+ patient records at once. Only eligible candidate results are listed!</p>
+                    </div>
+                </div>
+
+                <!-- BATCH RESULTS TABLE -->
+                <div class="card-header flex-between mb-2">
+                    <h4 style="font-size:1.05rem; font-weight:800;"><i class="fa-solid fa-user-check text-emerald"></i> ELIGIBLE CANDIDATE PATIENTS ONLY</h4>
+                    <button class="btn-primary btn-sm" onclick="exportScreeningResultsCsv()"><i class="fa-solid fa-download"></i> Export Eligible Patients CSV</button>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="clean-table">
+                        <thead>
+                            <tr>
+                                <th>Patient ID</th>
+                                <th>Full Name</th>
+                                <th>Age / Sex</th>
+                                <th>Primary Diagnosis</th>
+                                <th>HbA1c %</th>
+                                <th>eGFR</th>
+                                <th>Match Score</th>
+                                <th>Eligible Result</th>
+                                <th>Action Links & PDF</th>
+                            </tr>
+                        </thead>
+                        <tbody id="uploadResultsTbody">
+                            <!-- Populated dynamically by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- SYNTHETIC PATIENT CREATION MODAL -->
+    <div id="syntheticModal" class="modal-overlay hidden">
+        <div class="glass-panel modal-card" style="max-width: 580px; padding: 2rem;">
+            <div class="flex-between mb-3 pb-2" style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <h3 style="font-size: 1.25rem; font-weight: 900; color: #0F5C63;"><i class="fa-solid fa-user-plus"></i> Add New Patient Record</h3>
+                <button type="button" class="icon-btn" onclick="closeSyntheticPatientModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleCreateSyntheticPatient(event)">
+                <div class="form-group mb-3">
+                    <label class="form-label">Full Name:</label>
+                    <input type="text" id="synthName" class="form-input" placeholder="e.g. Dr. Aris Thorne" required>
+                </div>
+                <div class="grid-2col mb-3">
+                    <div class="form-group">
+                        <label class="form-label">Age:</label>
+                        <input type="number" id="synthAge" class="form-input" value="62" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Sex:</label>
+                        <select id="synthGender" class="form-select">
+                            <option value="Female">Female</option>
+                            <option value="Male">Male</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid-2col mb-3">
+                    <div class="form-group">
+                        <label class="form-label">HbA1c %:</label>
+                        <input type="number" step="0.1" id="synthHba1c" class="form-input" value="8.4" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">eGFR (mL/min):</label>
+                        <input type="number" id="synthEgfr" class="form-input" value="65" required>
+                    </div>
+                </div>
+                <div class="form-group mb-3">
+                    <label class="form-label">Primary Diagnosis Text:</label>
+                    <input type="text" id="synthDiagnosis" class="form-input" value="Type 2 Diabetes Mellitus (ICD-10: E11.9)" required>
+                </div>
+                <div class="form-group mb-4">
+                    <label class="form-label">Prior Stroke History (Months Ago):</label>
+                    <input type="number" id="synthStroke" class="form-input" value="999" placeholder="999 for None">
+                </div>
+                <div class="flex-row justify-end">
+                    <button type="button" class="btn-secondary" onclick="closeSyntheticPatientModal()">Cancel</button>
+                    <button type="submit" class="btn-primary"><i class="fa-solid fa-check"></i> Evaluate Patient</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- FLOATING AI CLINICAL TRIAL COPILOT CHATBOT WIDGET (ROLE INTEGRATED) -->
+    <div id="aiClinicalChatbotLauncher" onclick="var m=document.getElementById('aiClinicalChatbotModal');if(m){m.style.display=(m.style.display==='flex'?'none':'flex');m.style.flexDirection='column';}" style="position: fixed; bottom: 25px; right: 25px; z-index: 9999999; background: linear-gradient(135deg, #f59e0b, #b45309); color: #163A43; padding: 0.85rem 1.4rem; border-radius: 50px; box-shadow: 0 10px 30px rgba(245,158,11,0.6); cursor: pointer; display: flex; align-items: center; gap: 0.75rem; border: 2px solid #fbbf24; font-weight: 800; transition: transform 0.2s ease;">
+        <i class="fa-solid fa-robot" style="font-size: 1.3rem;"></i>
+        <span id="aiChatbotLauncherLabel">3. Doctor Clinical Copilot</span>
+        <span style="background: rgba(16,185,129,0.25); color:#0F7C78; font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 12px; font-weight: 800;">LIVE XAI</span>
+    </div>
+
+    <!-- AI CLINICAL CHATBOT MODAL WINDOW -->
+    <div id="aiClinicalChatbotModal" style="display: none; position: fixed; bottom: 85px; right: 25px; z-index: 9999999; width: 430px; height: 570px; flex-direction: column; background: #FFFFFF; border: 2px solid #fbbf24; box-shadow: 0 20px 60px rgba(0,0,0,0.95); border-radius: 16px; overflow: hidden; backdrop-filter: blur(20px);">
+        <!-- CHATBOT HEADER -->
+        <div style="background: #FFFFFF; padding: 0.85rem 1.15rem; border-bottom: 1px solid rgba(15,92,99,0.12); display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 0.65rem;">
+                <div style="background: #f59e0b; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #163A43; font-size: 1rem;">
+                    <i class="fa-solid fa-user-doctor"></i>
+                </div>
+                <div>
+                    <h4 id="aiChatbotRoleTitle" style="font-size: 0.95rem; font-weight: 900; color: #163A43; margin: 0;">3. Doctor Clinical Copilot</h4>
+                    <span style="font-size: 0.72rem; color: #0F7C78; font-weight: 700;"><i class="fa-solid fa-shield-check"></i> 21 CFR Part 11 Verified</span>
+                </div>
+            </div>
+            <button onclick="var m=document.getElementById('aiClinicalChatbotModal');if(m)m.style.display='none';" style="background: none; border: none; color: #52656D; cursor: pointer; font-size: 1.2rem; padding: 0.2rem;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <!-- CHAT MESSAGES BODY -->
+        <div id="aiChatbotMessagesList" style="flex: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.85rem;">
+            <div id="aiChatbotGreeting" class="msg msg-bot" style="background: #F5FAFC; border: 1px solid rgba(251,191,36,0.3); padding: 0.85rem; border-radius: 12px; font-size: 0.85rem; color: #52656D;">
+                👋 Hello Doctor! Ask me about patient match eligibility, Quest/Epic EMR lab values (HbA1c, eGFR), or post-dose care governance.
+            </div>
+
+            <!-- CHIPS -->
+            <div id="aiChatbotPresetChips" style="display: flex; flex-direction: column; gap: 0.4rem;">
+                <div style="font-size: 0.72rem; color: #38bdf8; font-weight: 800; text-transform: uppercase;">3. Doctor Clinical Screener Doubts:</div>
+                <button onclick="askCopilotPreset('Why is Subject PT-10201 eligible for Keytruda?')" style="text-align: left; font-size: 0.78rem; padding: 0.4rem 0.75rem; border-radius: 8px; background: rgba(56,189,248,0.15); border: 1px solid #38bdf8; color: #163A43; cursor: pointer;">
+                    🔎 Why is Subject PT-10201 eligible for Keytruda?
+                </button>
+                <button onclick="askCopilotPreset('What is the eGFR cutoff for Jardiance (NCT048821)?')" style="text-align: left; font-size: 0.78rem; padding: 0.4rem 0.75rem; border-radius: 8px; background: rgba(56,189,248,0.15); border: 1px solid #38bdf8; color: #163A43; cursor: pointer;">
+                    📊 What is the eGFR cutoff for Jardiance (NCT048821)?
+                </button>
+                <button onclick="askCopilotPreset('Check Donanemab ARIA-E edema safety rules')" style="text-align: left; font-size: 0.78rem; padding: 0.4rem 0.75rem; border-radius: 8px; background: rgba(56,189,248,0.15); border: 1px solid #38bdf8; color: #163A43; cursor: pointer;">
+                    💊 Check Donanemab ARIA-E edema safety rules
+                </button>
+            </div>
+        </div>
+
+        <!-- CHATBOT INPUT ROW -->
+        <div style="padding: 0.85rem; background: #FFFFFF; border-top: 1px solid rgba(15,92,99,0.12); display: flex; gap: 0.5rem;">
+            <input type="text" id="aiChatbotInput" placeholder="Ask AI Copilot any clinical doubt..." onkeydown="if(event.key === 'Enter') sendCopilotMessage()" style="flex: 1; background: #FFFFFF; border: 1px solid rgba(251,191,36,0.3); color: #163A43; padding: 0.5rem 0.85rem; border-radius: 8px; font-size: 0.85rem; outline: none;">
+            <button onclick="sendCopilotMessage()" style="background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #163A43; border: none; padding: 0.5rem 0.95rem; border-radius: 8px; cursor: pointer; font-weight: 800;">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- CORE JS SCRIPT -->
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            currentRole = 'DOCTOR_INVESTIGATOR';
+            updateCopilotChatbotForRole();
+            switchTrialProtocol();
+        });
+    </script>
+    <!-- INLINE AI CHATBOT TOGGLE OVERRIDE - GUARANTEED TO WORK -->
+    <script>
+        function toggleAiClinicalChatbot() {
+            var modal = document.getElementById('aiClinicalChatbotModal');
+            if (!modal) return;
+            if (modal.style.display === 'flex') {
+                modal.style.display = 'none';
+            } else {
+                modal.style.display = 'flex';
+                modal.style.flexDirection = 'column';
+                modal.style.position = 'fixed';
+                modal.style.bottom = '85px';
+                modal.style.right = '25px';
+                modal.style.zIndex = '99999999';
+                modal.style.width = '430px';
+                modal.style.height = '570px';
+                if (typeof updateCopilotChatbotForRole === 'function') updateCopilotChatbotForRole();
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Dosing & Treatment Governance Report PDF | CuraMatch PRO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary: #0F5C63;
+            --accent: #059669;
+            --amber: #d97706;
+            --dark: #0f172a;
+            --light-bg: #f8fafc;
+            --card-border: #cbd5e1;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: #e2e8f0;
+            color: var(--text-dark);
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .pdf-page {
+            background: #ffffff;
+            width: 210mm;
+            min-height: 297mm;
+            padding: 25mm 20mm;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            position: relative;
+        }
+
+        .no-print-bar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            background: #0f172a;
+            color: #fff;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .btn-print {
+            background: #10b981;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-print:hover { background: #059669; }
+
+        @media print {
+            body { background: #fff; padding: 0; }
+            .no-print-bar { display: none; }
+            .pdf-page { box-shadow: none; padding: 15mm; width: 100%; }
+        }
+
+        .header-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 3px solid #d97706;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .logo-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: #0f172a;
+        }
+        .logo-sub {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+
+        .badge-verified {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.78rem;
+            border: 1px solid #a7f3d0;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .section-heading {
+            font-size: 1rem;
+            font-weight: 800;
+            color: #0f172a;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 6px;
+            margin: 20px 0 12px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .info-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+        }
+        .info-label { font-size: 0.72rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+        .info-val { font-size: 0.95rem; font-weight: 800; color: #0f172a; margin-top: 2px; }
+
+        .dosing-box {
+            background: #fffbeb;
+            border: 2px solid #f59e0b;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .dosing-title {
+            font-size: 1.1rem;
+            font-weight: 900;
+            color: #b45309;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .clean-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+            margin-top: 10px;
+        }
+        .clean-table th {
+            background: #f1f5f9;
+            color: #334155;
+            text-align: left;
+            padding: 8px 10px;
+            font-weight: 700;
+            border-bottom: 2px solid #cbd5e1;
+        }
+        .clean-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .footer-sig-box {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding-top: 20px;
+            border-top: 2px dashed #cbd5e1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="no-print-bar">
+        <div>
+            <strong>CuraMatch PRO | Patient Dosing & Treatment Governance PDF</strong>
+        </div>
+        <button class="btn-print" onclick="downloadPdfDirect()">
+            <i class="fa-solid fa-file-pdf"></i> Download PDF Report
+        </button>
+    </div>
+
+    <div class="pdf-page" style="margin-top: 50px;">
+
+        <!-- Header -->
+        <div class="header-box">
+            <div>
+                <div class="logo-title"><i class="fa-solid fa-prescription-bottle-medical" style="color: #d97706;"></i> CURAMATCH PRO</div>
+                <div class="logo-sub">Clinical Trial Patient Medication & Treatment Governance Audit</div>
+            </div>
+            <div style="text-align: right;">
+                <span class="badge-verified"><i class="fa-solid fa-shield-halved"></i> 21 CFR Part 11 Compliant</span>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 5px;">Report Date: Aug 14, 2026</div>
+            </div>
+        </div>
+
+        <!-- Patient Info -->
+        <div class="section-heading"><i class="fa-solid fa-user"></i> Patient & Trial Information</div>
+        <div class="grid-2">
+            <div class="info-card">
+                <div class="info-label">Patient Full Name</div>
+                <div class="info-val" id="pdfPtName">Dr. Evelyn Vance</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Patient Identifier / Age / Sex</div>
+                <div class="info-val" id="pdfPtId">PT-10201 (59y, Female)</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Primary Diagnosis</div>
+                <div class="info-val" id="pdfPtDiag">Triple-Negative Breast Cancer (PD-L1 CPS 15)</div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Trial Protocol NCT</div>
+                <div class="info-val" id="pdfPtNct">NCT071204 (Phase III Keytruda Trial)</div>
+            </div>
+        </div>
+
+        <!-- Prescribed Drug & Dosage Box -->
+        <div class="dosing-box">
+            <div class="dosing-title">
+                <i class="fa-solid fa-capsules"></i> PRESCRIBED TRIAL MEDICATION & DOSAGE REGIMEN
+            </div>
+            <div class="grid-2" style="margin-bottom:0;">
+                <div>
+                    <span style="font-size:0.75rem; color:#78350f; font-weight:700;">INVESTIGATIONAL DRUG:</span>
+                    <h3 id="pdfDrugName" style="color:#b45309; font-size:1.15rem; font-weight:900;">Keytruda (Pembrolizumab)</h3>
+                </div>
+                <div>
+                    <span style="font-size:0.75rem; color:#78350f; font-weight:700;">PRESCRIBED DOSAGE & ROUTE:</span>
+                    <h3 id="pdfDrugDose" style="color:#b45309; font-size:1.15rem; font-weight:900;">200mg IV Infusion Q3W</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dose Dates Given & Clinical Changes Noted Section -->
+        <div class="section-heading"><i class="fa-solid fa-calendar-check" style="color: #d97706;"></i> 1. Dose Administration Dates & Post-Dose Clinical Changes Noted</div>
+        <div id="pdfDoseTimelineContainer" style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;">
+            <!-- Dynamically populated by script -->
+        </div>
+
+        <!-- Adherence & Governance Summary -->
+        <div class="section-heading"><i class="fa-solid fa-chart-line"></i> 2. Medication Adherence & Care Governance</div>
+        <div class="grid-2">
+            <div class="info-card" style="background:#ecfdf5; border-color:#a7f3d0;">
+                <div class="info-label" style="color:#065f46;">Medication Adherence Rate</div>
+                <div class="info-val" id="pdfAdherence" style="color:#047857; font-size:1.3rem;">98.4% (Smart Bottle & Nurse Audited)</div>
+            </div>
+            <div class="info-card" style="background:#F5FAFC; border-color:#DDF5F0;">
+                <div class="info-label" style="color:#0F5C63;">Therapeutic Biomarker Progress</div>
+                <div class="info-val" id="pdfBiomarker" style="color:#0F5C63; font-size:1.3rem;">PD-L1 CPS: 15 | eGFR: 78 mL/min</div>
+            </div>
+        </div>
+
+        <!-- Dosing History Log Table -->
+        <div class="section-heading"><i class="fa-solid fa-list-check"></i> Chronological Dose Administration & Progress Log</div>
+        <table class="clean-table">
+            <thead>
+                <tr>
+                    <th>Date & Time</th>
+                    <th>Cycle / Visit</th>
+                    <th>Prescribed Drug & Dose</th>
+                    <th>Administration Status</th>
+                    <th>Lab / Biomarker Result</th>
+                    <th>Adverse Events</th>
+                </tr>
+            </thead>
+            <tbody id="pdfDosingTbody">
+                <tr>
+                    <td><strong>Aug 14, 2026 - 10:00 AM</strong></td>
+                    <td>Cycle 2, Day 1</td>
+                    <td><strong>Keytruda 200mg IV</strong></td>
+                    <td><span style="color:#047857; font-weight:800;">ADMINISTERED (100%)</span></td>
+                    <td>PD-L1 CPS: 15</td>
+                    <td>Mild Fatigue (Grade 1)</td>
+                </tr>
+                <tr>
+                    <td><strong>Jul 24, 2026 - 09:30 AM</strong></td>
+                    <td>Cycle 1, Day 1</td>
+                    <td><strong>Keytruda 200mg IV</strong></td>
+                    <td><span style="color:#047857; font-weight:800;">ADMINISTERED (100%)</span></td>
+                    <td>Baseline HbA1c: 5.4%</td>
+                    <td>None (Grade 0)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Signatures & Governance Stamp -->
+        <div class="footer-sig-box">
+            <div>
+                <div style="font-size:0.75rem; color:var(--text-muted);">PRINCIPAL INVESTIGATOR SIGNATURE</div>
+                <div style="font-family:'Courier New', monospace; font-weight:bold; font-size:1rem; margin-top:5px; color:#0f172a;">
+                    Dr. Aris Thorne, MD, PhD [DIGITALLY SIGNED]
+                </div>
+                <div style="font-size:0.7rem; color:var(--text-muted);">Timestamp: 2026-08-14T17:34:00Z</div>
+            </div>
+
+            <div style="text-align:right;">
+                <div style="font-size:0.75rem; color:var(--text-muted);">FDA GCP AUDIT STAMP</div>
+                <strong style="color:#047857; font-size:0.85rem;"><i class="fa-solid fa-stamp"></i> AUDIT PASSED & VERIFIED</strong>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const name = urlParams.get('name') || 'Dr. Evelyn Vance';
+        const id = urlParams.get('id') || 'PT-10201';
+        const age = urlParams.get('age') || '59';
+        const gender = urlParams.get('gender') || 'Female';
+        const diag = urlParams.get('diag') || 'Triple-Negative Breast Cancer';
+        const drug = urlParams.get('drug') || 'Keytruda (Pembrolizumab)';
+        const dose = urlParams.get('dose') || '200mg IV Infusion Q3W';
+
+        document.getElementById('pdfPtName').textContent = name;
+        document.getElementById('pdfPtId').textContent = `${id} (${age}y, ${gender})`;
+        document.getElementById('pdfPtDiag').textContent = diag;
+        document.getElementById('pdfDrugName').textContent = drug;
+        document.getElementById('pdfDrugDose').textContent = dose;
+
+        const dosingReportDatabase = {
+            'keytruda': [
+                {
+                    doseNum: 'Dose 1 (Cycle 1, Day 1)',
+                    dateGiven: 'Jul 24, 2026 at 09:30 AM',
+                    drugName: 'Keytruda (Pembrolizumab) 200mg IV',
+                    changesNoted: 'Biomarker Drop: PD-L1 tumor size reduced by -14.3% (4.2cm -> 3.6cm). Mild Grade 1 post-infusion fatigue noted.',
+                    aiAction: 'AI Improvement Suggestion: Pre-medicate with Antihistamine 30 min prior to Dose 2 to eliminate Grade 1 fatigue.'
+                },
+                {
+                    doseNum: 'Dose 2 (Cycle 2, Day 1)',
+                    dateGiven: 'Aug 14, 2026 at 10:00 AM',
+                    drugName: 'Keytruda (Pembrolizumab) 200mg IV',
+                    changesNoted: 'Fatigue completely resolved post-antihistamine. Tumor size further reduced to 3.1cm (-26.2% cumulative). eGFR 78 mL/min stable.',
+                    aiAction: 'AI Improvement Suggestion: Maintain standard 200mg Q3W infusion regimen for Dose 3.'
+                }
+            ],
+            'donanemab': [
+                {
+                    doseNum: 'Dose 1 (Cycle 1, Day 1)',
+                    dateGiven: 'Jul 15, 2026 at 08:45 AM',
+                    drugName: 'Donanemab 700mg IV Infusion',
+                    changesNoted: 'Amyloid PET clearance: -24.8% reduction in cortical plaque deposition. MMSE score improved 24 -> 26/30.',
+                    aiAction: 'AI Improvement Suggestion: Maintain 700mg IV Q4W dosing. Brain MRI scan cleared zero ARIA-E edema.'
+                },
+                {
+                    doseNum: 'Dose 2 (Cycle 2, Day 1)',
+                    dateGiven: 'Aug 12, 2026 at 09:15 AM',
+                    drugName: 'Donanemab 700mg IV Infusion',
+                    changesNoted: 'Plaque clearance reached -38.4% cumulative. Patient cognitive recall confidence elevated.',
+                    aiAction: 'AI Improvement Suggestion: Proceed with Cycle 3 as scheduled.'
+                }
+            ],
+            'jardiance': [
+                {
+                    doseNum: 'Dose 1 (Cycle 1, Day 1)',
+                    dateGiven: 'Jul 01, 2026 at 08:00 AM',
+                    drugName: 'Jardiance (Empagliflozin) 10mg Oral QD',
+                    changesNoted: 'Glycemic response noted: Fasting blood glucose dropped from 184 to 132 mg/dL. HbA1c improved 8.4% -> 7.1%.',
+                    aiAction: 'AI Improvement Suggestion: Maintain 10mg daily oral dose; renal eGFR rate stable at 78 mL/min.'
+                },
+                {
+                    doseNum: 'Dose 2 (Cycle 2, Day 1)',
+                    dateGiven: 'Aug 01, 2026 at 08:00 AM',
+                    drugName: 'Jardiance (Empagliflozin) 10mg Oral QD',
+                    changesNoted: 'HbA1c stabilized at 6.8%. Zero hypoglycemia episodes. BP reduced 134/84 -> 122/78 mmHg.',
+                    aiAction: 'AI Improvement Suggestion: Continue daily maintenance oral regimen.'
+                }
+            ],
+            'tagrisso': [
+                {
+                    doseNum: 'Dose 1 (Cycle 1, Day 1)',
+                    dateGiven: 'Jul 10, 2026 at 09:00 AM',
+                    drugName: 'Tagrisso (Osimertinib) 80mg Oral QD',
+                    changesNoted: 'EGFR Exon 19 deletion VAF dropped from 42.8% to 18.2%. Cough frequency reduced by 80%.',
+                    aiAction: 'AI Improvement Suggestion: Continue 80mg daily oral dose; monitor LCF lab markers at Week 6.'
+                }
+            ],
+            'perjeta': [
+                {
+                    doseNum: 'Dose 1 (Cycle 1, Day 1)',
+                    dateGiven: 'Jul 18, 2026 at 11:00 AM',
+                    drugName: 'Perjeta + Herceptin IV Infusion',
+                    changesNoted: 'HER2 receptor suppression -32.0% biomarker drop. Cardiac LVEF baseline stable at 65%.',
+                    aiAction: 'AI Improvement Suggestion: Maintain dual-antibody IV infusion Q3W schedule.'
+                }
+            ],
+            'sacubitril': [
+                {
+                    doseNum: 'Dose 1 (Cycle 1, Day 1)',
+                    dateGiven: 'Jul 05, 2026 at 08:30 AM',
+                    drugName: 'Sacubitril/Valsartan 97/103mg BID',
+                    changesNoted: 'NT-proBNP cardiac biomarker dropped from 1,450 to 620 pg/mL. Dyspnea Grade reduced 3 -> 1.',
+                    aiAction: 'AI Improvement Suggestion: Maintain 97/103mg BID dosing; BP steady at 118/76 mmHg.'
+                }
+            ],
+            'onivyde': [
+                {
+                    doseNum: 'Dose 1 (Cycle 1, Day 1)',
+                    dateGiven: 'Jul 20, 2026 at 10:15 AM',
+                    drugName: 'Onivyde 43mg/m2 IV Infusion',
+                    changesNoted: 'CA19-9 biomarker clearance -18.4%. Grade 1 nausea reported on Day 2 post-dose.',
+                    aiAction: 'AI Improvement Suggestion: Pre-hydrate 500mL Saline prior to Cycle 2 infusion to manage GI tolerability.'
+                }
+            ]
+        };
+
+        const container = document.getElementById('pdfDoseTimelineContainer');
+        const matchKey = Object.keys(dosingReportDatabase).find(k => drug.toLowerCase().includes(k)) || 'keytruda';
+        const entries = dosingReportDatabase[matchKey];
+
+        if (container) {
+            container.innerHTML = '';
+            entries.forEach(e => {
+                const div = document.createElement('div');
+                div.style.cssText = 'background:#f8fafc; border:1px solid #cbd5e1; border-left:4px solid #d97706; padding:12px 15px; border-radius:8px;';
+                div.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e2e8f0; padding-bottom:6px; margin-bottom:8px;">
+                        <strong style="color:#0f172a; font-size:0.92rem;"><i class="fa-solid fa-capsules" style="color:#d97706;"></i> ${e.doseNum} — ${e.drugName}</strong>
+                        <span style="background:#fef3c7; color:#b45309; font-weight:800; font-size:0.75rem; padding:3px 8px; border-radius:12px;"><i class="fa-solid fa-clock"></i> Date Given: ${e.dateGiven}</span>
+                    </div>
+                    <div style="font-size:0.85rem; color:#1e293b; font-weight:700; margin-bottom:4px;">
+                        <i class="fa-solid fa-file-medical" style="color:#0F5C63;"></i> <strong>Clinical Changes Noted After Giving:</strong>
+                    </div>
+                    <div style="font-size:0.82rem; color:#334155; line-height:1.4; background:#ffffff; border:1px solid #e2e8f0; padding:8px 10px; border-radius:6px; margin-bottom:6px;">
+                        ${e.changesNoted}
+                    </div>
+                    <div style="font-size:0.8rem; color:#047857; font-weight:800; background:#ecfdf5; border:1px solid #a7f3d0; padding:6px 10px; border-radius:6px;">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> ${e.aiAction}
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function downloadPdfDirect() {
+            const element = document.querySelector('.pdf-page');
+            const ptId = urlParams.get('id') || 'PT-10201';
+            
+            if (window.html2pdf) {
+                const opt = {
+                    margin:       0.2,
+                    filename:     `Clinical_Dosing_Report_${ptId}.pdf`,
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2, useCORS: true },
+                    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+                };
+                html2pdf().set(opt).from(element).save();
+            } else {
+                window.print();
+            }
+        }
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                downloadPdfDirect();
+            }, 600);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "total": 5,
+  "entry": [
+    {
+      "fullUrl": "urn:uuid:PT-10029",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "PT-10029",
+        "name": [{ "use": "official", "family": "Vance", "given": ["Eleanor"] }],
+        "gender": "female",
+        "birthDate": "1964-04-12",
+        "conditions": [
+          { "code": "E11.9", "display": "Type 2 Diabetes Mellitus" }
+        ],
+        "observations": [
+          { "code": "4548-4", "display": "HbA1c in Blood", "value": 8.4, "unit": "%" },
+          { "code": "2160-0", "display": "eGFR Renal Rate", "value": 58, "unit": "mL/min/1.73m2" }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:PT-10034",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "PT-10034",
+        "name": [{ "use": "official", "family": "Sterling", "given": ["Marcus"] }],
+        "gender": "male",
+        "birthDate": "1978-09-24",
+        "conditions": [
+          { "code": "E11.9", "display": "Type 2 Diabetes Mellitus" },
+          { "code": "I10", "display": "Essential Hypertension" }
+        ],
+        "observations": [
+          { "code": "4548-4", "display": "HbA1c in Blood", "value": 8.6, "unit": "%" },
+          { "code": "2160-0", "display": "eGFR Renal Rate", "value": 65, "unit": "mL/min/1.73m2" }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:PT-10041",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "PT-10041",
+        "name": [{ "use": "official", "family": "Lin", "given": ["Sophia"] }],
+        "gender": "female",
+        "birthDate": "1971-01-15",
+        "conditions": [
+          { "code": "C50.911", "display": "HER2+ Metastatic Breast Cancer" }
+        ],
+        "observations": [
+          { "code": "HER2-IHC", "display": "HER2 Status", "valueString": "IHC 3+ Positive" },
+          { "code": "2160-0", "display": "eGFR Renal Rate", "value": 72, "unit": "mL/min/1.73m2" }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:PT-10059",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "PT-10059",
+        "name": [{ "use": "official", "family": "Miller", "given": ["David"] }],
+        "gender": "male",
+        "birthDate": "1955-11-30",
+        "conditions": [
+          { "code": "E11.9", "display": "Type 2 Diabetes Mellitus" },
+          { "code": "I63.9", "display": "Ischemic Stroke (4 months ago)" }
+        ],
+        "observations": [
+          { "code": "4548-4", "display": "HbA1c in Blood", "value": 7.9, "unit": "%" },
+          { "code": "2160-0", "display": "eGFR Renal Rate", "value": 38, "unit": "mL/min/1.73m2" }
+        ]
+      }
+    },
+    {
+      "fullUrl": "urn:uuid:PT-10088",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "PT-10088",
+        "name": [{ "use": "official", "family": "Thorne", "given": ["Aris"] }],
+        "gender": "male",
+        "birthDate": "1960-07-08",
+        "conditions": [
+          { "code": "C34.90", "display": "Non-Small Cell Lung Cancer (NSCLC)" }
+        ],
+        "observations": [
+          { "code": "EGFR-NGS", "display": "EGFR Mutation Panel", "valueString": "Exon 19 Deletion Positive" },
+          { "code": "MRI-BRAIN", "display": "Intracranial MRI Scan", "valueString": "No Brain Metastasis" }
+        ]
+      }
+    }
+  ]
+}

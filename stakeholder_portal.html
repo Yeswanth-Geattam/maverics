@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CuraMatch PRO - Pharma Stakeholder & Executive Portal</title>
+    
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+
+    <style>
+        body {
+            background: #F5FAFC;
+            color: #52656D;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3, h4, h5, h6 { color: #163A43 !important; }
+        .text-muted { color: #3A4B53 !important; }
+        .clean-table th { background: #0F5C63 !important; color: #ffffff !important; }
+        .badge-pro, .badge-tag { background: #DDF5F0 !important; color: #0F5C63 !important; }
+        .card { background: #FFFFFF !important; }
+
+        .portal-header {
+            background: #FFFFFF;
+            border-bottom: 1px solid rgba(15,92,99,0.12);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+
+        .portal-container {
+            max-width: 1440px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- STAKEHOLDER PORTAL HEADER -->
+    <header class="portal-header">
+        <div style="display: flex; align-items: center; gap: 1.25rem;">
+            <a href="index.html" class="icon-btn" title="Switch Role" style="text-decoration:none; display:flex; align-items:center; justify-content:center; width:40px; height:40px; background:rgba(30,41,59,0.8); border-radius:10px; border:1px solid var(--border-color);">
+                <i class="fa-solid fa-arrow-left text-cyan"></i>
+            </a>
+            <div class="brand-text">
+                <span class="brand-name">CuraMatch <span class="badge-pro">PRO</span></span>
+                <span class="brand-sub">Pharma Executive & Stakeholder Portal</span>
+            </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 1.25rem;">
+            <a href="drug_performance_dashboard.html" target="_blank" class="privacy-pill-btn" style="background: rgba(139,92,246,0.2); border-color: #6D28D9; color: #6D28D9; text-decoration: none;">
+                <i class="fa-solid fa-chart-line"></i>
+                <span>Drug Performance Dashboard</span>
+            </a>
+
+            <div style="background: #FFFFFF; padding: 0.4rem 0.85rem; border-radius: 30px; border: 1px solid rgba(15,92,99,0.12); display: flex; align-items: center; gap: 0.75rem;">
+                <span style="font-size: 0.8rem; font-weight: 800; color: #6D28D9;">
+                    <i class="fa-solid fa-chart-line text-purple"></i> Role: 1. Pharma Stakeholder / Sponsor
+                </span>
+                <a href="index.html" class="btn-secondary btn-sm" style="padding: 0.2rem 0.6rem; font-size: 0.75rem; border-radius: 20px; text-decoration: none;">
+                    <i class="fa-solid fa-right-from-bracket text-red"></i> Switch Role
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- STAKEHOLDER PORTAL MAIN CONTENT -->
+    <main class="portal-container">
+        <div class="card glass-panel" style="border: 2px solid var(--purple); background: #FFFFFF; padding: 1.75rem;">
+            <div class="card-header flex-between mb-3 pb-3">
+                <div class="header-title">
+                    <i class="fa-solid fa-building-ngo icon-accent text-purple" style="font-size: 1.6rem;"></i>
+                    <div>
+                        <h2 style="font-size: 1.35rem; font-weight: 900; color: #163A43;">Sponsor Portfolio & Drug Performance Overview</h2>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 2px;">
+                            Select a Sponsor Company to review active registered trial protocols and inspect single-drug performance metrics.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="selector-box" style="margin:0;">
+                    <label style="color: #6D28D9; font-size:0.75rem; font-weight:800;"><i class="fa-solid fa-industry"></i> Active Sponsor Company:</label>
+                    <select id="pharmaSponsorSelect" onchange="switchPharmaSponsorCompany()" style="font-weight: 800; background: #F5FAFC; color: #6D28D9; border-color: #6D28D9;">
+                        <option value="Merck">Merck & Co.</option>
+                        <option value="Eli Lilly">Eli Lilly</option>
+                        <option value="AstraZeneca">AstraZeneca</option>
+                        <option value="Roche">Roche</option>
+                        <option value="Novartis">Novartis</option>
+                        <option value="Pfizer">Pfizer Inc.</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- SPONSOR STATS METRICS -->
+            <div class="grid-4col spacious-grid mb-4">
+                <div class="metric-stat-card">
+                    <i class="fa-solid fa-industry stat-icon text-purple"></i>
+                    <div>
+                        <h3 id="pharmaActiveName">Merck & Co.</h3>
+                        <p>Active Sponsor Company</p>
+                    </div>
+                </div>
+
+                <div class="metric-stat-card">
+                    <i class="fa-solid fa-vial-circle-check stat-icon text-cyan"></i>
+                    <div>
+                        <h3 id="pharmaTrialCount">1 Active Protocol</h3>
+                        <p>Sponsor Portfolio</p>
+                    </div>
+                </div>
+
+                <div class="metric-stat-card">
+                    <i class="fa-solid fa-hospital-user stat-icon text-emerald"></i>
+                    <div>
+                        <h3 id="pharmaEnrolledCount">500 Candidates</h3>
+                        <p>Enrolled Cohort Target</p>
+                    </div>
+                </div>
+
+                <div class="metric-stat-card">
+                    <i class="fa-solid fa-dollar-sign stat-icon text-amber"></i>
+                    <div>
+                        <h3 id="pharmaGrantBudget">$28.4M</h3>
+                        <p>Total Trial Grant Budget</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- REGISTERED TRIALS TABLE -->
+            <div class="card-header flex-between mb-2">
+                <h4 style="font-size:1.05rem; font-weight:800;"><i class="fa-solid fa-list-check text-purple"></i> Registered Trial Protocols & Performance Analytics</h4>
+                <span class="badge-tag text-purple">Executive Blinded Oversight</span>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="clean-table">
+                    <thead>
+                        <tr>
+                            <th>Protocol NCT ID</th>
+                            <th>Pharma Sponsor</th>
+                            <th>Investigational Molecule & Specs</th>
+                            <th>Target Indication</th>
+                            <th>Study Phase</th>
+                            <th>Recruitment Target</th>
+                            <th>Active Trial Sites</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pharmaTrialsTbody">
+                        <!-- Populated dynamically by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- FLOATING AI CLINICAL TRIAL COPILOT CHATBOT WIDGET (ROLE INTEGRATED) -->
+    <div id="aiClinicalChatbotLauncher" onclick="var m=document.getElementById('aiClinicalChatbotModal');if(m){m.style.display=(m.style.display==='flex'?'none':'flex');m.style.flexDirection='column';}" style="position: fixed; bottom: 25px; right: 25px; z-index: 9999999; background: linear-gradient(135deg, #f59e0b, #b45309); color: #163A43; padding: 0.85rem 1.4rem; border-radius: 50px; box-shadow: 0 10px 30px rgba(245,158,11,0.6); cursor: pointer; display: flex; align-items: center; gap: 0.75rem; border: 2px solid #fbbf24; font-weight: 800; transition: transform 0.2s ease;">
+        <i class="fa-solid fa-robot" style="font-size: 1.3rem;"></i>
+        <span id="aiChatbotLauncherLabel">1. Pharma Stakeholder Copilot</span>
+        <span style="background: rgba(16,185,129,0.25); color:#0F7C78; font-size: 0.7rem; padding: 0.15rem 0.5rem; border-radius: 12px; font-weight: 800;">LIVE XAI</span>
+    </div>
+
+    <!-- AI CLINICAL CHATBOT MODAL WINDOW -->
+    <div id="aiClinicalChatbotModal" style="display: none; position: fixed; bottom: 85px; right: 25px; z-index: 9999999; width: 430px; height: 570px; flex-direction: column; background: #FFFFFF; border: 2px solid #fbbf24; box-shadow: 0 20px 60px rgba(0,0,0,0.95); border-radius: 16px; overflow: hidden; backdrop-filter: blur(20px);">
+        <!-- CHATBOT HEADER -->
+        <div style="background: #FFFFFF; padding: 0.85rem 1.15rem; border-bottom: 1px solid rgba(15,92,99,0.12); display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 0.65rem;">
+                <div style="background: #f59e0b; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #163A43; font-size: 1rem;">
+                    <i class="fa-solid fa-user-doctor"></i>
+                </div>
+                <div>
+                    <h4 id="aiChatbotRoleTitle" style="font-size: 0.95rem; font-weight: 900; color: #163A43; margin: 0;">1. Pharma Stakeholder Copilot</h4>
+                    <span style="font-size: 0.72rem; color: #0F7C78; font-weight: 700;"><i class="fa-solid fa-shield-check"></i> 21 CFR Part 11 Verified</span>
+                </div>
+            </div>
+            <button onclick="var m=document.getElementById('aiClinicalChatbotModal');if(m)m.style.display='none';" style="background: none; border: none; color: #52656D; cursor: pointer; font-size: 1.2rem; padding: 0.2rem;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <!-- CHAT MESSAGES BODY -->
+        <div id="aiChatbotMessagesList" style="flex: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.85rem;">
+            <div id="aiChatbotGreeting" class="msg msg-bot" style="background: #F5FAFC; border: 1px solid rgba(251,191,36,0.3); padding: 0.85rem; border-radius: 12px; font-size: 0.85rem; color: #52656D;">
+                👋 Hello Sponsor! Ask me about trial grant budgets ($42.5M), Phase III efficacy, candidate enrollment targets, or executive drug performance analytics.
+            </div>
+
+            <!-- CHIPS -->
+            <div id="aiChatbotPresetChips" style="display: flex; flex-direction: column; gap: 0.4rem;">
+                <div style="font-size: 0.72rem; color: #6D28D9; font-weight: 800; text-transform: uppercase;">1. Stakeholder Executive Doubts:</div>
+                <button onclick="askCopilotPreset('What is Merck & Co. Keytruda Portfolio ROI & Grant Budget?')" style="text-align: left; font-size: 0.78rem; padding: 0.4rem 0.75rem; border-radius: 8px; background: rgba(168,85,247,0.15); border: 1px solid #a855f7; color: #163A43; cursor: pointer;">
+                    📊 What is Merck & Co. Keytruda Portfolio ROI & Grant Budget?
+                </button>
+                <button onclick="askCopilotPreset('Show Phase III Efficacy & Global Site Performance for NCT071204')" style="text-align: left; font-size: 0.78rem; padding: 0.4rem 0.75rem; border-radius: 8px; background: rgba(168,85,247,0.15); border: 1px solid #a855f7; color: #163A43; cursor: pointer;">
+                    📈 Show Phase III Efficacy & Global Site Performance for NCT071204
+                </button>
+                <button onclick="askCopilotPreset('View Total Enrolled Candidate Financial Breakdown ($42.5M)')" style="text-align: left; font-size: 0.78rem; padding: 0.4rem 0.75rem; border-radius: 8px; background: rgba(168,85,247,0.15); border: 1px solid #a855f7; color: #163A43; cursor: pointer;">
+                    💰 View Total Enrolled Candidate Financial Breakdown ($42.5M)
+                </button>
+            </div>
+        </div>
+
+        <!-- CHATBOT INPUT ROW -->
+        <div style="padding: 0.85rem; background: #FFFFFF; border-top: 1px solid rgba(15,92,99,0.12); display: flex; gap: 0.5rem;">
+            <input type="text" id="aiChatbotInput" placeholder="Ask AI Copilot any clinical doubt..." onkeydown="if(event.key === 'Enter') sendCopilotMessage()" style="flex: 1; background: #FFFFFF; border: 1px solid rgba(251,191,36,0.3); color: #163A43; padding: 0.5rem 0.85rem; border-radius: 8px; font-size: 0.85rem; outline: none;">
+            <button onclick="sendCopilotMessage()" style="background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #163A43; border: none; padding: 0.5rem 0.95rem; border-radius: 8px; cursor: pointer; font-weight: 800;">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- CORE JS SCRIPT -->
+    <script>
+        var currentRole = 'STAKEHOLDER_SPONSOR';
+    </script>
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            currentRole = 'STAKEHOLDER_SPONSOR';
+            updateCopilotChatbotForRole();
+            switchPharmaSponsorCompany();
+            renderPharmaPortalTable();
+        });
+    </script>
+    <!-- INLINE AI CHATBOT TOGGLE OVERRIDE - GUARANTEED TO WORK -->
+    <script>
+        function toggleAiClinicalChatbot() {
+            var modal = document.getElementById('aiClinicalChatbotModal');
+            if (!modal) return;
+            if (modal.style.display === 'flex') {
+                modal.style.display = 'none';
+            } else {
+                modal.style.display = 'flex';
+                modal.style.flexDirection = 'column';
+                modal.style.position = 'fixed';
+                modal.style.bottom = '85px';
+                modal.style.right = '25px';
+                modal.style.zIndex = '99999999';
+                modal.style.width = '430px';
+                modal.style.height = '570px';
+                if (typeof updateCopilotChatbotForRole === 'function') updateCopilotChatbotForRole();
+            }
+        }
+    </script>
+</body>
+</html>

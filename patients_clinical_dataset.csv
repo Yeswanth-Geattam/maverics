@@ -1,0 +1,11 @@
+Patient_ID,Full_Name,Age,Gender,Primary_Diagnosis,ICD10_Code,HbA1c_Percent,eGFR_mLmin,Stroke_History_Months,Biomarker_Status,Active_Medications,Eligibility_NCT048821
+PT-10029,Eleanor Vance,62,Female,Type 2 Diabetes Mellitus,E11.9,8.4,58,999,Wildtype,"Metformin 1000mg BID, Atorvastatin 20mg",ELIGIBLE (94%)
+PT-10034,Marcus Sterling,48,Male,Type 2 Diabetes Mellitus,E11.9,8.6,65,999,Wildtype,"Metformin 500mg BID, Lisinopril 10mg",ELIGIBLE (92%)
+PT-10041,Sophia Lin,55,Female,HER2+ Metastatic Breast Cancer,C50.911,5.6,72,999,HER2+ (IHC 3+),"Trastuzumab, Pertuzumab",INELIGIBLE (Diagnosis Mismatch)
+PT-10059,David Miller,71,Male,Type 2 Diabetes Mellitus,E11.9,7.9,38,4,Wildtype,"Metformin 500mg, Clopidogrel 75mg",EXCLUDED (eGFR < 45 & Stroke < 6m)
+PT-10088,Dr. Aris Thorne,66,Male,Non-Small Cell Lung Cancer,C34.90,5.4,81,999,EGFR Exon 19 Deletion+,Osimertinib 80mg QD,ELIGIBLE (NCT060122)
+PT-10102,Rachel Green,52,Female,Type 2 Diabetes Mellitus,E11.9,9.1,62,999,Wildtype,"Metformin 1000mg BID",ELIGIBLE (96%)
+PT-10115,Arthur Pendelton,74,Male,Type 2 Diabetes Mellitus,E11.9,8.2,49,999,Wildtype,"Metformin 850mg BID, Glipizide 5mg",ELIGIBLE (88%)
+PT-10128,Clara Oswald,39,Female,Type 1 Diabetes Mellitus,E10.9,9.8,92,999,Wildtype,"Insulin Glargine 20u QD",EXCLUDED (Type 1 Diabetes)
+PT-10144,Victor Von Doom,68,Male,Type 2 Diabetes Mellitus,E11.9,11.2,41,999,Wildtype,"Metformin 1000mg, Insulin NPH",EXCLUDED (HbA1c > 10.5% & eGFR < 45)
+PT-10159,Helena Wayne,61,Female,Type 2 Diabetes Mellitus,E11.9,8.0,54,999,Wildtype,"Metformin 1000mg BID",ELIGIBLE (95%)

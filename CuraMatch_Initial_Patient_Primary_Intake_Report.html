@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step 1: Initial Patient Primary Intake & Screening Report</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <style>
+        :root {
+            --primary: #159A9C;
+            --accent: #0F5C63;
+            --danger: #ef4444;
+            --purple: #8b5cf6;
+            --dark: #0f172a;
+            --border: #cbd5e1;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #94a3b8;
+            color: #1e293b;
+            padding: 20px;
+        }
+
+        .pdf-container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .print-bar {
+            max-width: 850px;
+            margin: 0 auto 15px auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--purple);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .header-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: var(--dark);
+        }
+
+        .header-title span { color: #6D28D9; }
+
+        .step-badge {
+            background: #F5FAFC;
+            color: #6D28D9;
+            border: 1px solid #159A9C;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 0.85rem;
+        }
+
+        .section-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin: 20px 0 10px 0;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 5px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .field label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #52656D;
+            text-transform: uppercase;
+        }
+
+        .field strong {
+            font-size: 0.95rem;
+            color: var(--dark);
+        }
+
+        .vital-card {
+            background: #DDF5F0;
+            border: 1px solid #a7f3d0;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .vital-card h4 { font-size: 0.75rem; color: #047857; text-transform: uppercase; }
+        .vital-card h2 { font-size: 1.4rem; color: #065f46; font-weight: 900; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.88rem;
+        }
+
+        th { background: #1e293b; color: white; padding: 10px; text-align: left; }
+        td { padding: 10px; border-bottom: 1px solid #e2e8f0; }
+
+        .tag-pass { background: #d1fae5; color: #047857; font-weight: 800; padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; }
+
+        .footer {
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 2px dashed #cbd5e1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #52656D;
+        }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .print-bar { display: none; }
+            .pdf-container { box-shadow: none; padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="print-bar">
+        <h3><i class="fa-solid fa-file-medical"></i> Primary Step: Initial Patient Intake & Screening Report</h3>
+        <button class="btn" onclick="window.print()"><i class="fa-solid fa-print"></i> Print / Save PDF</button>
+    </div>
+
+    <div class="pdf-container">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <div class="header-title">CuraMatch <span>PRO</span></div>
+                <div style="font-size:0.85rem; color:#52656D; font-weight:600;">STEP 1: PRIMARY PATIENT INTAKE & SCREENING DOSSIER</div>
+            </div>
+            <div style="text-align:right;">
+                <span class="step-badge"><i class="fa-solid fa-shield-halved"></i> PRIMARY STEP 1 COMPLETE</span>
+                <div style="font-size:0.75rem; color:#52656D; margin-top:4px;">Date: Aug 14, 2026 | Intake ID: INT-2026-001</div>
+            </div>
+        </div>
+
+        <!-- Section 1: Demographics -->
+        <div class="section-title"><i class="fa-solid fa-user-vcard text-primary"></i> 1. Candidate Patient Intake Demographics</div>
+        <div class="grid-2">
+            <div class="field"><label>Patient Name</label><strong>Dr. Evelyn Vance</strong></div>
+            <div class="field"><label>Age & Gender</label><strong>59 Years | Female</strong></div>
+            <div class="field"><label>Primary EMR ID</label><strong>PT-10201 (Epic EMR)</strong></div>
+            <div class="field"><label>Attending Physician</label><strong>Dr. Sarah Connor, MD</strong></div>
+        </div>
+
+        <!-- Section 2: Clinical Vitals & Lab Baseline -->
+        <div class="section-title"><i class="fa-solid fa-heart-pulse text-danger"></i> 2. Baseline Clinical Parameters & Vitals</div>
+        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; margin-bottom:15px;">
+            <div class="vital-card">
+                <h4>HbA1c Baseline</h4>
+                <h2>8.4%</h2>
+            </div>
+            <div class="vital-card">
+                <h4>eGFR Renal Rate</h4>
+                <h2>78 mL/min</h2>
+            </div>
+            <div class="vital-card">
+                <h4>PD-L1 CPS Score</h4>
+                <h2>CPS = 15</h2>
+            </div>
+            <div class="vital-card">
+                <h4>Stroke Recency</h4>
+                <h2>None (0m)</h2>
+            </div>
+        </div>
+
+        <!-- Section 3: Diagnostic Classification -->
+        <div class="section-title"><i class="fa-solid fa-disease text-purple"></i> 3. Pathology & Diagnostic Classification</div>
+        <div class="grid-2">
+            <div class="field"><label>Primary Diagnosis</label><strong>Triple-Negative Breast Cancer (TNBC)</strong></div>
+            <div class="field"><label>ICD-10 Diagnostic Code</label><strong>C50.919 (Malignant Neoplasm of Breast)</strong></div>
+            <div class="field"><label>Biomarker Profile</label><strong>ER Negative (0%), PR Negative (0%), HER2 IHC 0</strong></div>
+            <div class="field"><label>Target Molecule</label><strong>Keytruda (Pembrolizumab 200mg IV)</strong></div>
+        </div>
+
+        <!-- Section 4: Primary Screening Result -->
+        <div class="section-title"><i class="fa-solid fa-list-check text-accent"></i> 4. Primary Pre-Screening Eligibility Summary</div>
+        <table class="clean-table">
+            <thead>
+                <tr>
+                    <th>Primary Requirement</th>
+                    <th>Protocol Limit</th>
+                    <th>Patient Value</th>
+                    <th>Primary Pre-Screen Result</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Indication Alignment</td>
+                    <td>Triple-Negative Breast Cancer</td>
+                    <td>TNBC (ER-/PR-/HER2-)</td>
+                    <td><span class="tag-pass">ELIGIBLE</span></td>
+                </tr>
+                <tr>
+                    <td>Biomarker Cutoff</td>
+                    <td>PD-L1 CPS &ge; 10</td>
+                    <td>CPS = 15</td>
+                    <td><span class="tag-pass">ELIGIBLE</span></td>
+                </tr>
+                <tr>
+                    <td>Kidney Safety Baseline</td>
+                    <td>eGFR &ge; 50 mL/min</td>
+                    <td>78 mL/min</td>
+                    <td><span class="tag-pass">ELIGIBLE</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div>CuraMatch AI Clinical Intelligence System &bull; Step 1 Primary Intake Complete</div>
+            <div style="font-weight:700;">Approved for Step 2 Full EMR Vector Scan</div>
+        </div>
+    </div>
+
+</body>
+</html>

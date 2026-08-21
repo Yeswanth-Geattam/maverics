@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CuraMatch AI Pro - Patient Comprehensive Medical History & Trial Audit Report</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary: #0F5C63;
+            --accent: #10b981;
+            --danger: #ef4444;
+            --purple: #8b5cf6;
+            --dark: #0f172a;
+            --border: #cbd5e1;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #94a3b8;
+            color: #1e293b;
+            padding: 20px;
+        }
+
+        .pdf-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .print-bar {
+            max-width: 900px;
+            margin: 0 auto 15px auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn:hover { background: #0F5C63; }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .header-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.7rem;
+            font-weight: 900;
+            color: var(--dark);
+        }
+
+        .header-title span { color: var(--primary); }
+
+        .badge {
+            background: #E6F7FA;
+            color: var(--primary);
+            border: 1px solid #7dd3fc;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 0.82rem;
+        }
+
+        .section-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--dark);
+            margin: 22px 0 10px 0;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .field label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #52656D;
+            text-transform: uppercase;
+        }
+
+        .field strong {
+            font-size: 0.95rem;
+            color: var(--dark);
+        }
+
+        .timeline-box {
+            background: #f1f5f9;
+            border-left: 4px solid var(--primary);
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .timeline-box h4 { font-size: 0.85rem; color: var(--primary); font-weight: 800; }
+        .timeline-box p { font-size: 0.82rem; color: #334155; margin-top: 2px; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.88rem;
+        }
+
+        th { background: #0f172a; color: white; padding: 10px; text-align: left; font-weight: 700; }
+        td { padding: 10px; border-bottom: 1px solid #e2e8f0; }
+        tr:nth-child(even) { background: #f8fafc; }
+
+        .pass-tag { background: #d1fae5; color: #047857; font-weight: 800; padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; }
+        .fail-tag { background: #ffe4e6; color: #be123c; font-weight: 800; padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; }
+
+        .proof-box {
+            background: #0f172a;
+            color: #159A9C;
+            padding: 14px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.82rem;
+            margin-top: 10px;
+            border-left: 4px solid var(--purple);
+        }
+
+        .footer {
+            margin-top: 35px;
+            padding-top: 15px;
+            border-top: 2px dashed #cbd5e1;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            font-size: 0.8rem;
+            color: #52656D;
+        }
+
+        .signature-line {
+            width: 220px;
+            border-top: 1px solid #64748b;
+            text-align: center;
+            padding-top: 4px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .print-bar { display: none; }
+            .pdf-container { box-shadow: none; padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="print-bar">
+        <h3><i class="fa-solid fa-file-medicalimary"></i> Patient Medical History & Eligibility Audit Report</h3>
+        <button class="btn" onclick="downloadPdfDirect()"><i class="fa-solid fa-file-pdf"></i> Download PDF Report</button>
+    </div>
+
+    <div class="pdf-container">
+        <!-- Header -->
+        <div class="header">
+            <div>
+                <div class="header-title">CuraMatch <span>PRO</span></div>
+                <div style="font-size:0.85rem; color:#52656D; font-weight:600;">FDA 21 CFR Part 11 Verified Patient EMR History Dossier</div>
+            </div>
+            <div style="text-align:right;">
+                <span class="badge"><i class="fa-solid fa-user-shield"></i> VERIFIED EMR RECORD</span>
+                <div style="font-size:0.75rem; color:#52656D; margin-top:5px;" id="reportDateStr">Date: Aug 14, 2026</div>
+            </div>
+        </div>
+
+        <!-- 1. Patient Demographics -->
+        <div class="section-title"><i class="fa-solid fa-id-card text-primary"></i> 1. Patient Demographics & Identification</div>
+        <div class="grid-2">
+            <div class="field"><label>Patient Name</label><strong id="ptName">Dr. Evelyn Vance</strong></div>
+            <div class="field"><label>Patient ID / Record Hash</label><strong id="ptId">PT-10201 (SHA256: e8f92a4b)</strong></div>
+            <div class="field"><label>Age & Gender</label><strong id="ptAgeSex">59 Years | Female</strong></div>
+            <div class="field"><label>EHR Source Portal</label><strong>Epic EMR + Quest Diagnostics Sync</strong></div>
+        </div>
+
+        <!-- 2. Previous Medical History & Timeline -->
+        <div class="section-title"><i class="fa-solid fa-clock-rotate-left text-purple"></i> 2. Previous Medical History & 24-Month EMR Timeline</div>
+        
+        <div class="timeline-box">
+            <h4>📅 Oct 12, 2024 — Outpatient Consultation (Primary Care)</h4>
+            <p id="timeline1">Patient presented with fatigue and routine lab follow-up. Diagnosed with Type 2 Diabetes Mellitus (ICD-10: E11.9). Metformin 1000mg BID initiated.</p>
+        </div>
+
+        <div class="timeline-box" style="border-left-color: #0F5C63;">
+            <h4>📅 Mar 15, 2025 — Diagnostic Pathology & Biomarker Panel</h4>
+            <p id="timeline2">Biomarker Assay (LOINC 94500-6): Estrogen Receptor ER 0%, Progesterone Receptor PR 0%, HER2 IHC 0. PD-L1 Combined Positive Score (CPS) = 15.</p>
+        </div>
+
+        <div class="timeline-box" style="border-left-color: var(--dark);">
+            <h4>📅 Nov 04, 2025 — Comprehensive Renal & Metabolic Lab Panel</h4>
+            <p id="timeline3">Serum Creatinine: 0.9 mg/dL. Calculated eGFR rate: 78 mL/min/1.73m² (LOINC 2160-0). Liver enzymes ALT 22 U/L, AST 19 U/L (Normal).</p>
+        </div>
+
+        <!-- 3. Active Medications & Allergy History -->
+        <div class="section-title"><i class="fa-solid fa-pills text-danger"></i> 3. Active Medications & Allergy History</div>
+        <div class="grid-2">
+            <div class="field"><label>Active Prescription List (RxNorm)</label><strong id="ptMeds">Keytruda (Pembrolizumab) 200mg IV Q3W, Metformin 1000mg BID</strong></div>
+            <div class="field"><label>Documented Drug Allergies</label><strong>No Known Drug Allergies (NKDA)</strong></div>
+            <div class="field"><label>Prior Surgeries History</label><strong>Laparoscopic Cholecystectomy (2021)</strong></div>
+            <div class="field"><label>Cardiovascular History</label><strong>No Prior Ischemic Stroke or Acute MI</strong></div>
+        </div>
+
+        <!-- 4. Trial Protocol Eligibility Evaluation -->
+        <div class="section-title"><i class="fa-solid fa-shield-halved text-accent"></i> 4. Trial Protocol Eligibility Audit Result</div>
+        
+        <div style="background:#DDF5F0f5; border:2px solid var(--accent); padding:15px; border-radius:8px; margin-bottom:15px;" id="statusCardBox">
+            <h3 style="color:#065f46; font-size:1.15rem; font-weight:800;" id="statusHeading"><i class="fa-solid fa-circle-check"></i> 96% HIGH ELIGIBILITY MATCH - APPROVED FOR TRIAL</h3>
+            <p style="color:#047857; font-size:0.85rem; margin-top:2px;" id="statusSub">Patient satisfies all inclusion criteria & safety limits for NCT071204 (Keytruda TNBC Phase III Study).</p>
+        </div>
+
+        <table class="clean-table">
+            <thead>
+                <tr>
+                    <th>Protocol Rule Description</th>
+                    <th>Required Limit</th>
+                    <th>Patient EHR Value</th>
+                    <th>Audit Status</th>
+                </tr>
+            </thead>
+            <tbody id="rulesTbody">
+                <tr>
+                    <td>Target Indication Alignment</td>
+                    <td>Triple-Negative Breast Cancer</td>
+                    <td>TNBC (ER-/PR-/HER2-)</td>
+                    <td><span class="pass-tag">PASS</span></td>
+                </tr>
+                <tr>
+                    <td>PD-L1 Biomarker Score</td>
+                    <td>PD-L1 CPS &ge; 10</td>
+                    <td>CPS Score = 15</td>
+                    <td><span class="pass-tag">PASS</span></td>
+                </tr>
+                <tr>
+                    <td>Renal Safety Baseline</td>
+                    <td>eGFR &ge; 50 mL/min</td>
+                    <td>78 mL/min</td>
+                    <td><span class="pass-tag">PASS</span></td>
+                </tr>
+                <tr>
+                    <td>Stroke Exclusion Window</td>
+                    <td>No Stroke within 3 Months</td>
+                    <td>No History (0m)</td>
+                    <td><span class="pass-tag">PASS</span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- 5. Source Provenance -->
+        <div class="section-title"><i class="fa-solid fa-quote-left text-primary"></i> 5. Verified EMR Source Document Citation</div>
+        <div class="proof-box" id="proofBoxText">
+            [Pathology Report Page 44, Section 4.5]<br>
+            "ER 0%, PR 0%, HER2 IHC 0 (Triple-Negative Breast Cancer confirmed)."<br><br>
+            [LOINC Assay Page 62, Section 6.1]<br>
+            "PD-L1 Expression Assay (LOINC 94500-6): Combined Positive Score (CPS) calculated at 15."
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div>
+                <strong>CuraMatch AI Clinical Intelligence System</strong><br>
+                21 CFR Part 11 Automated Audit Hash: AUD-2026-990142
+            </div>
+            <div class="signature-line">
+                Principal Investigator Signature<br>
+                Dr. Sarah Connor, MD (GCP Certified)
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dynamic URL Query Parameter Parser to populate any patient's report!
+        const urlParams = new URLSearchParams(window.location.search);
+        const name = urlParams.get('name');
+        const id = urlParams.get('id');
+        const age = urlParams.get('age');
+        const gender = urlParams.get('gender');
+        const diag = urlParams.get('diag');
+        const hba1c = urlParams.get('hba1c');
+        const egfr = urlParams.get('egfr');
+        const meds = urlParams.get('meds');
+
+        if (name) document.getElementById('ptName').textContent = name;
+        if (id) document.getElementById('ptId').textContent = `${id} (SHA256: e8f92a4b)`;
+        if (age && gender) document.getElementById('ptAgeSex').textContent = `${age} Years | ${gender}`;
+        if (diag) document.getElementById('timeline1').textContent = `Outpatient Consultation: Diagnosed with ${diag}. Active treatment management initiated.`;
+        if (hba1c && egfr) document.getElementById('timeline3').textContent = `Lab Panel (LOINC): Baseline HbA1c ${hba1c}%, calculated eGFR rate ${egfr} mL/min/1.73m².`;
+        if (meds) document.getElementById('ptMeds').textContent = meds;
+
+        function downloadPdfDirect() {
+            const element = document.querySelector('.pdf-container');
+            const ptId = id || 'PT-10201';
+            
+            if (window.html2pdf) {
+                const opt = {
+                    margin:       0.2,
+                    filename:     `Patient_Medical_Audit_Report_${ptId}.pdf`,
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2, useCORS: true },
+                    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+                };
+                html2pdf().set(opt).from(element).save();
+            } else {
+                window.print();
+            }
+        }
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                downloadPdfDirect();
+            }, 600);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,51 @@
+{
+  "trials": [
+    {
+      "nctId": "NCT048821",
+      "title": "Phase III Study of SGLT2 Inhibitor in High-Risk Type 2 Diabetes Mellitus",
+      "phase": "Phase 3",
+      "indication": "Type 2 Diabetes Mellitus",
+      "somaticInclusionRules": {
+        "minAge": 18,
+        "maxAge": 75,
+        "hba1cRange": { "min": 7.5, "max": 10.5, "unit": "%" },
+        "eGFRMin": 45
+      },
+      "somaticExclusionRules": [
+        "Ischemic Stroke within 6 months",
+        "Acute Myocardial Infarction within 6 months",
+        "Type 1 Diabetes Mellitus history"
+      ]
+    },
+    {
+      "nctId": "NCT060122",
+      "title": "Targeted EGFR Exon 19 Deletion Inhibitor in Advanced NSCLC",
+      "phase": "Phase 2",
+      "indication": "Non-Small Cell Lung Cancer (NSCLC)",
+      "somaticInclusionRules": {
+        "minAge": 18,
+        "maxAge": 80,
+        "requiredBiomarker": "EGFR Exon 19 Deletion Positive"
+      },
+      "somaticExclusionRules": [
+        "Active Intracranial Brain Metastases",
+        "Hepatic Impairment ALT > 3x ULN"
+      ]
+    },
+    {
+      "nctId": "NCT051190",
+      "title": "HER2+ Advanced Metastatic Breast Cancer Monoclonal Immunotherapy",
+      "phase": "Phase 3",
+      "indication": "HER2+ Metastatic Breast Cancer",
+      "somaticInclusionRules": {
+        "minAge": 18,
+        "maxAge": 80,
+        "requiredBiomarker": "HER2 IHC 3+ Positive",
+        "lvefMin": 50
+      },
+      "somaticExclusionRules": [
+        "Prior Monoclonal Antibody Hypersensitivity"
+      ]
+    }
+  ]
+}
